@@ -19,7 +19,7 @@ public class ItemDto {
 	@NotBlank
 	private String description;
 	@NotNull
-	private boolean available;
+	private Boolean available;
 
 	private Integer owner;
 

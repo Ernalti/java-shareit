@@ -8,14 +8,12 @@ public interface ItemService {
 
 	Item addItem(int userId, Item item);
 
-	Item editItem(int itemId, int userId, Item item);
+	Item updateItem(int itemId, int userId, Item updatedItem);
 
 	Item getItemById(int itemId);
 
 	List<Item> getOwnerItems(int userId);
 
 	List<Item> searchItemsByText(String text);
-
-	List<Item> getItemsByUserId(int userId);
 
 }

@@ -3,11 +3,11 @@ package ru.practicum.shareit.user.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.exception.exceptions.EntityAlreadyExistsException;
 import ru.practicum.shareit.exception.exceptions.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.Email;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +15,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
+@Validated
 public class InMemoryUserStorage implements UserStorage {
 
 	private final Map<Integer, User> users = new HashMap<>();
@@ -45,9 +46,9 @@ public class InMemoryUserStorage implements UserStorage {
 			updateUser.setName(name);
 		}
 
-		@Email
 		String email = user.getEmail();
 		if (email != null && !email.isBlank()) {
+			validEmail(email);
 			updateUser.setEmail(email);
 		}
 
@@ -100,7 +101,12 @@ public class InMemoryUserStorage implements UserStorage {
 		}
 	}
 
-	private void validEmail(@Email String Email) {
-
+	private void validEmail(String email) {
+		if (email != null) {
+			boolean isEmailValid = email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
+			if (!isEmailValid) {
+				throw new IllegalArgumentException("Invalid email format: " + email);
+			}
+		}
 	}
 }

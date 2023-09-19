@@ -8,14 +8,12 @@ public interface ItemStorage {
 
 	Item addItem(Item item);
 
-	Item updateItem(Item item);
+	Item updateItem(int itemId, Item updatedItem);
 
 	Item getItemById(int id);
 
-	List<Item> getAllItems();
-
 	List<Item> getOwnerItems(int ownerId);
 
-	List<Item> searchItemsByText(String searchText);
+	List<Item> searchItemsByText(String text);
 
 }
