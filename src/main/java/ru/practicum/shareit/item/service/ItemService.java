@@ -16,4 +16,6 @@ public interface ItemService {
 
 	List<Item> searchItemsByText(String text);
 
+	void clearItems();
+
 }

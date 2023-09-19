@@ -35,6 +35,7 @@ public class ItemController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") int userId,
 	                       @Valid @RequestBody ItemDto itemDto) {
+		log.info("Add item {} to user {}", itemDto,userId);
 		Item item = itemMapper.toItem(itemDto);
 		Item res = itemService.addItem(userId, item);
 		return itemMapper.toItemDto(res);
@@ -44,26 +45,37 @@ public class ItemController {
 	public ItemDto updateItem(@PathVariable int itemId,
 	                          @RequestHeader("X-Sharer-User-Id") int userId,
 	                          @RequestBody ItemDto itemDto) {
+		log.info("Update item {} to user {}", itemDto,userId);
 		Item editedItem = itemService.updateItem(itemId, userId, itemMapper.toItem(itemDto));
 		return itemMapper.toItemDto(editedItem);
 	}
 
 	@GetMapping("/{itemId}")
 	public ItemDto getItemById(@PathVariable int itemId) {
+		log.info("Get item by Id {}", itemId);
 		Item res = itemService.getItemById(itemId);
 		return itemMapper.toItemDto(res);
 	}
 
 	@GetMapping
 	public List<ItemDto> getOwnerItems(@RequestHeader("X-Sharer-User-Id") int userId) {
+		log.info("Get user items. userId = {}", userId);
 		List<Item> res = itemService.getOwnerItems(userId);
 		return itemMapper.toListItemDto(res);
 	}
 
 	@GetMapping("/search")
 	public List<ItemDto> searchItemsByText(@RequestParam("text") String text) {
+		log.info("Search item by text {}", text);
 		List<Item> res = itemService.searchItemsByText(text);
 		return itemMapper.toListItemDto(res);
+	}
+
+	@DeleteMapping
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void clearItems() {
+		log.info("Delete all items");
+		itemService.clearItems();
 	}
 
 }

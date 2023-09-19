@@ -27,11 +27,12 @@ public class InMemoryUserStorage implements UserStorage {
 
 	@Override
 	public User createUser(User user) {
+
 		testUnique(user);
 
 		user.setId(nextId());
 		users.put(user.getId(), user);
-
+		log.info("User created in memory {}",user);
 		return user;
 	}
 
@@ -51,7 +52,7 @@ public class InMemoryUserStorage implements UserStorage {
 			validEmail(email);
 			updateUser.setEmail(email);
 		}
-
+		log.info("User updated in memory {}",user);
 
 		return updateUser;
 	}
@@ -62,11 +63,13 @@ public class InMemoryUserStorage implements UserStorage {
 		if (user == null) {
 			throw new NotFoundException("User with id " + id + " not found");
 		}
+		log.info("Get user by id  in memory {}",user);
 		return user;
 	}
 
 	@Override
 	public List<User> getAllUsers() {
+		log.info("Get all users in memory");
 		return new ArrayList<>(users.values());
 	}
 
@@ -75,7 +78,15 @@ public class InMemoryUserStorage implements UserStorage {
 		if (!users.containsKey(id)) {
 			throw new NotFoundException("User with id " + id + " not found");
 		}
+		log.info("User with id {} deleted",id);
 		users.remove(id);
+	}
+
+	@Override
+	public void clearUsers() {
+		users.clear();
+		id = 1;
+		log.info("Clear users");
 	}
 
 	private Integer nextId() {

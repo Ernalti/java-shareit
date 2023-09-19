@@ -16,4 +16,6 @@ public interface ItemStorage {
 
 	List<Item> searchItemsByText(String text);
 
+	void clearItems();
+
 }

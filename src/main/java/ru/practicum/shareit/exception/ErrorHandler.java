@@ -27,14 +27,14 @@ public class ErrorHandler {
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ErrorResponse handleNotFound(final NotFoundException e) {
-		log.debug("Получен статус 404 Not found {}", e.getMessage(), e);
+		log.debug("Get status 404 Not found {}", e.getMessage(), e);
 		return new ErrorResponse(gson.toJson(e.getMessage()));
 	}
 
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ErrorResponse authorizationError(final AuthorizationErrorException e) {
-		log.debug("Получен статус 404 Not found {}", e.getMessage(), e);
+		log.debug("Get status 404 Not found {}", e.getMessage(), e);
 		return new ErrorResponse(gson.toJson(e.getMessage()));
 	}
 }

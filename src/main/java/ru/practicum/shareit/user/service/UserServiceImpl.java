@@ -46,9 +46,14 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void deleteUser(Integer id) {
-		log.info("Delete uther with id {} ",id);
+		log.info("Delete uther with id {} ", id);
 		userStorage.deleteUser(id);
 	}
 
+	@Override
+	public void clearUsers() {
+		log.info("Clear all users");
+		userStorage.clearUsers();
+	}
 
 }

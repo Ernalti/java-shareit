@@ -68,4 +68,11 @@ public class UserController {
 		log.info("Delete user with id {}",id);
 		userService.deleteUser(id);
 	}
+
+	@DeleteMapping
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void clearUsers() {
+		log.info("Delete all users");
+		userService.clearUsers();
+	}
 }
