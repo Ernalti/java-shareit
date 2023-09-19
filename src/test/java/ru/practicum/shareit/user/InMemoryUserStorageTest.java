@@ -32,7 +32,7 @@ public class InMemoryUserStorageTest {
 
 
 	@Test
-	void ShouldCreateAndGetUser() {
+	void shouldCreateAndGetUser() {
 		assertEquals(userStorage.getAllUsers().size(), 0);
 		User user = userStorage.createUser(user1);
 		user1.setId(user.getId());
@@ -68,7 +68,7 @@ public class InMemoryUserStorageTest {
 	}
 
 	@Test
-	void ShouldNotCreateUserWithEqualName() {
+	void shouldNotCreateUserWithEqualName() {
 		userStorage.createUser(user1);
 		User user3 = new User(null, user1.getName(), "user3@mail.ru");
 
@@ -77,7 +77,7 @@ public class InMemoryUserStorageTest {
 	}
 
 	@Test
-	void ShouldNotCreateUserWithEqualEmail() {
+	void shouldNotCreateUserWithEqualEmail() {
 		userStorage.createUser(user1);
 		User user3 = new User(null, "user3", user1.getEmail());
 
@@ -87,7 +87,7 @@ public class InMemoryUserStorageTest {
 
 
 	@Test
-	void ShouldNotUpdateUserWithWrongEmail() {
+	void shouldNotUpdateUserWithWrongEmail() {
 		User user = userStorage.createUser(user1);
 		User user3 = new User(user.getId(), "user3", "user3");
 		assertThrows(IllegalArgumentException.class, () ->
@@ -95,13 +95,13 @@ public class InMemoryUserStorageTest {
 	}
 
 	@Test
-	void ShouldNotGetUserWithWrongId() {
+	void shouldNotGetUserWithWrongId() {
 		assertThrows(NotFoundException.class, () ->
 				userStorage.getUserById(9876));
 	}
 
 	@Test
-	void ShouldNotDeleteUserWithWrongId() {
+	void shouldNotDeleteUserWithWrongId() {
 		assertThrows(NotFoundException.class, () ->
 				userStorage.deleteUser(9876));
 	}

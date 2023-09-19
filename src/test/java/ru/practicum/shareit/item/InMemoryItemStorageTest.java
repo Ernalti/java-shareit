@@ -40,7 +40,7 @@ public class InMemoryItemStorageTest {
 	}
 
 	@Test
-	void ShouldAddAndGetItem() {
+	void shouldAddAndGetItem() {
 		User user = userStorage.createUser(user1);
 		item1.setOwner(user.getId());
 		Item item = itemStorage.addItem(item1);
@@ -58,7 +58,7 @@ public class InMemoryItemStorageTest {
 	}
 
 	@Test
-	void ShouldNotGetItemWithWrongId() {
+	void shouldNotGetItemWithWrongId() {
 		assertThrows(NotFoundException.class, () ->
 				itemStorage.getItemById(9876));
 	}
