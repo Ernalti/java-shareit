@@ -30,7 +30,7 @@ public class InMemoryItemStorageTest {
 
 
 	@BeforeEach
-	void beforeEach() {
+	public void beforeEach() {
 		itemStorage.clearItems();
 		item1 = new Item(null, "item1", "Description 1", true, null, null);
 		item2 = new Item(null, "item2", "Description 2", true, null, null);
@@ -40,7 +40,7 @@ public class InMemoryItemStorageTest {
 	}
 
 	@Test
-	void shouldAddAndGetItem() {
+	public void shouldAddAndGetItem() {
 		User user = userStorage.createUser(user1);
 		item1.setOwner(user.getId());
 		Item item = itemStorage.addItem(item1);
@@ -49,7 +49,7 @@ public class InMemoryItemStorageTest {
 	}
 
 	@Test
-	void shouldUpdateItem() {
+	public void shouldUpdateItem() {
 		User user = userStorage.createUser(user1);
 		item1.setOwner(user.getId());
 		Item item = itemStorage.addItem(item1);
@@ -58,13 +58,13 @@ public class InMemoryItemStorageTest {
 	}
 
 	@Test
-	void shouldNotGetItemWithWrongId() {
+	public void shouldNotGetItemWithWrongId() {
 		assertThrows(NotFoundException.class, () ->
 				itemStorage.getItemById(9876));
 	}
 
 	@Test
-	void shouldGetOwnerItems() {
+	public void shouldGetOwnerItems() {
 		User user = userStorage.createUser(user1);
 		item1.setOwner(user.getId());
 		itemStorage.addItem(item1);
@@ -77,7 +77,7 @@ public class InMemoryItemStorageTest {
 	}
 
 	@Test
-	void shouldSearchItemsByText() {
+	public void shouldSearchItemsByText() {
 		User user = userStorage.createUser(user1);
 		item1.setOwner(user.getId());
 		itemStorage.addItem(item1);
@@ -91,7 +91,7 @@ public class InMemoryItemStorageTest {
 	}
 
 	@Test
-	void shouldSearchItemsByEmptyText() {
+	public void shouldSearchItemsByEmptyText() {
 		User user = userStorage.createUser(user1);
 		item1.setOwner(user.getId());
 		itemStorage.addItem(item1);
