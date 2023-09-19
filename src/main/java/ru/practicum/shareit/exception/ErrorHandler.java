@@ -33,7 +33,7 @@ public class ErrorHandler {
 
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ErrorResponse AuthorizationError(final AuthorizationErrorException e) {
+	public ErrorResponse authorizationError(final AuthorizationErrorException e) {
 		log.debug("Получен статус 404 Not found {}", e.getMessage(), e);
 		return new ErrorResponse(gson.toJson(e.getMessage()));
 	}

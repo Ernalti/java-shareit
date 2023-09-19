@@ -9,6 +9,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
+
 import javax.validation.Valid;
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class UserController {
 	@GetMapping("/{id}")
 	public UserDto getUserById(@PathVariable Integer id) {
 		log.info("Get user by id {}", id);
-		User res =userService.getUserById(id);
+		User res = userService.getUserById(id);
 		return userMapper.toUserDto(res);
 	}
 
