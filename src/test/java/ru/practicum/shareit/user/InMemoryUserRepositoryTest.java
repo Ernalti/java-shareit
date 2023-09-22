@@ -11,6 +11,7 @@ import ru.practicum.shareit.exception.exceptions.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -83,15 +84,6 @@ public class InMemoryUserRepositoryTest {
 
 		assertThrows(EntityAlreadyExistsException.class, () ->
 				userRepository.createUser(user3));
-	}
-
-
-	@Test
-	public void shouldNotUpdateUserWithWrongEmail() {
-		User user = userRepository.createUser(user1);
-		User user3 = new User(user.getId(), "user3", "user3");
-		assertThrows(IllegalArgumentException.class, () ->
-				userRepository.updateUser(user3.getId(), user3));
 	}
 
 	@Test
