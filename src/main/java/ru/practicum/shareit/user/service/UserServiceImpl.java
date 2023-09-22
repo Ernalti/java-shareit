@@ -3,8 +3,10 @@ package ru.practicum.shareit.user.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 
@@ -13,47 +15,49 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
-	private final UserStorage userStorage;
+	private final UserRepository userRepository;
 
 	@Autowired
-	public UserServiceImpl(UserStorage userStorage) {
-		this.userStorage = userStorage;
+	public UserServiceImpl(UserRepository userRepository) {
+		this.userRepository = userRepository;
 	}
 
 	@Override
-	public User createUser(User user) {
+	public UserDto createUser(UserDto userDto) {
+		User user = UserMapper.toUser(userDto);
 		log.info("Create user {}", user);
-		return userStorage.createUser(user);
+		return UserMapper.toUserDto(userRepository.createUser(user));
 	}
 
 	@Override
-	public User updateUser(Integer id,User user) {
+	public UserDto updateUser(Integer id, UserDto userDto) {
+		User user = UserMapper.toUser(userDto);
 		log.info("Update user {}", user);
-		return userStorage.updateUser(id, user);
+		return UserMapper.toUserDto(userRepository.updateUser(id, user));
 	}
 
 	@Override
-	public User getUserById(Integer id) {
+	public UserDto getUserById(Integer id) {
 		log.info("Get user by id {}", id);
-		return userStorage.getUserById(id);
+		return UserMapper.toUserDto(userRepository.getUserById(id));
 	}
 
 	@Override
-	public List<User> getAllUsers() {
+	public List<UserDto> getAllUsers() {
 		log.info("Get all users");
-		return userStorage.getAllUsers();
+		return UserMapper.toListUserDto(userRepository.getAllUsers());
 	}
 
 	@Override
 	public void deleteUser(Integer id) {
 		log.info("Delete uther with id {} ", id);
-		userStorage.deleteUser(id);
+		userRepository.deleteUser(id);
 	}
 
 	@Override
 	public void clearUsers() {
 		log.info("Clear all users");
-		userStorage.clearUsers();
+		userRepository.clearUsers();
 	}
 
 }

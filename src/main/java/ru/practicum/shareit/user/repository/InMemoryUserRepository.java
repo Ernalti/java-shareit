@@ -1,58 +1,67 @@
-package ru.practicum.shareit.user.storage;
+package ru.practicum.shareit.user.repository;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.exception.exceptions.EntityAlreadyExistsException;
 import ru.practicum.shareit.exception.exceptions.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
-@Component
+@Repository
 @Validated
-public class InMemoryUserStorage implements UserStorage {
+public class InMemoryUserRepository implements UserRepository {
 
 	private final Map<Integer, User> users = new HashMap<>();
+	private final Set<String> userEmails = new HashSet<>();
+	private final Set<String> userNames = new HashSet<>();
 	private Integer id;
 
-	public InMemoryUserStorage() {
+	public InMemoryUserRepository() {
 		this.id = 1;
 	}
 
 	@Override
 	public User createUser(User user) {
 
-		testUnique(user);
+		isUnique(user);
 
 		user.setId(nextId());
 		users.put(user.getId(), user);
-		log.info("User created in memory {}",user);
+		userNames.add(user.getName());
+		userEmails.add(user.getEmail());
+		log.info("User created in memory {}", user);
 		return user;
 	}
 
 	@Override
 	public User updateUser(Integer id, User user) {
 		user.setId(id);
-		testUnique(user);
 		User updateUser = getUserById(id);
 
 		String name = user.getName();
-		if (name != null && !name.isBlank()) {
+		if (name != null && !name.isBlank() && !updateUser.getName().equals(user.getName())) {
+			if (userNames.contains(user.getName())) {
+				throw new EntityAlreadyExistsException("User with name " + user.getName() + " already exist");
+			}
+			userNames.remove(updateUser.getName());
 			updateUser.setName(name);
+			userNames.add(user.getName());
 		}
 
 		String email = user.getEmail();
-		if (email != null && !email.isBlank()) {
-			validEmail(email);
+		if (email != null && !email.isBlank() && !updateUser.getEmail().equals(user.getEmail())) {
+			if (userEmails.contains(user.getEmail())) {
+				throw new EntityAlreadyExistsException("User with email " + user.getName() + " already exist");
+			}
+			userEmails.remove(updateUser.getEmail());
 			updateUser.setEmail(email);
+			userEmails.add(user.getEmail());
 		}
-		log.info("User updated in memory {}",user);
+		log.info("User updated in memory {}", user);
 
 		return updateUser;
 	}
@@ -78,13 +87,18 @@ public class InMemoryUserStorage implements UserStorage {
 		if (!users.containsKey(id)) {
 			throw new NotFoundException("User with id " + id + " not found");
 		}
-		log.info("User with id {} deleted",id);
+		User user = getUserById(id);
+		userNames.remove(user.getName());
+		userEmails.remove(user.getEmail());
+		log.info("User with id {} deleted", id);
 		users.remove(id);
 	}
 
 	@Override
 	public void clearUsers() {
 		users.clear();
+		userNames.clear();
+		userEmails.clear();
 		id = 1;
 		log.info("Clear users");
 	}
@@ -93,16 +107,9 @@ public class InMemoryUserStorage implements UserStorage {
 		return id++;
 	}
 
-	private void testUnique(User user) {
-		boolean nameNotUnique = user.getName() != null &&
-				users.values()
-						.stream()
-						.anyMatch(u -> u.getName().equals(user.getName()) && !u.getId().equals(user.getId()));
-
-		boolean emailNotUnique = user.getEmail() != null &&
-				users.values()
-						.stream()
-						.anyMatch(u -> u.getEmail().equals(user.getEmail()) && !u.getId().equals(user.getId()));
+	private void isUnique(User user) {
+		boolean nameNotUnique = userNames.contains(user.getName());
+		boolean emailNotUnique = userEmails.contains(user.getEmail());
 
 		if (nameNotUnique) {
 			throw new EntityAlreadyExistsException("User with name " + user.getName() + " already exist");
@@ -112,12 +119,4 @@ public class InMemoryUserStorage implements UserStorage {
 		}
 	}
 
-	private void validEmail(String email) {
-		if (email != null) {
-			boolean isEmailValid = email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
-			if (!isEmailValid) {
-				throw new IllegalArgumentException("Invalid email format: " + email);
-			}
-		}
-	}
 }

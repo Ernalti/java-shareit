@@ -1,9 +1,10 @@
 package ru.practicum.shareit.item.storage;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,14 +12,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component
-public class InMemoryItemStorage implements ItemStorage {
+@Repository
+public class InMemoryItemRepository implements ItemRepository {
 
 	private final Map<Integer, Item> items = new HashMap<>();
 
 	private int id;
 
-	public InMemoryItemStorage() {
+	public InMemoryItemRepository() {
 		id = 1;
 	}
 
@@ -34,24 +35,8 @@ public class InMemoryItemStorage implements ItemStorage {
 	@Override
 	public Item updateItem(int itemId, Item updatedItem) {
 		log.info("Update item with id {} to {}", itemId, updatedItem);
-		Item item = getItemById(itemId);
-
-		String updatedName = updatedItem.getName();
-
-		if (updatedName != null && !updatedName.isBlank()) {
-			item.setName(updatedName);
-		}
-
-		String updatedDescription = updatedItem.getDescription();
-		if (updatedDescription != null && !updatedDescription.isBlank()) {
-			item.setDescription(updatedDescription);
-		}
-
-		Boolean updatedAvailable = updatedItem.getAvailable();
-		if (updatedAvailable != null) {
-			item.setAvailable(updatedAvailable);
-		}
-		return item;
+		items.put(itemId, updatedItem);
+		return updatedItem;
 	}
 
 	@Override

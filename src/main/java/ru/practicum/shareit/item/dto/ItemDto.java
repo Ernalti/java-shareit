@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ItemDto {
 
 	private Integer id;
@@ -20,9 +22,5 @@ public class ItemDto {
 	private String description;
 	@NotNull
 	private Boolean available;
-
-	private Integer owner;
-
-	private Integer request;
 
 }

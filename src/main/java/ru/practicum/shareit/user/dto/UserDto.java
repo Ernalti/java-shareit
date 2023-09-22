@@ -10,9 +10,9 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class UserDto {
 	private Integer id;
-	@NotBlank
+	@NotBlank(groups = ValidationGroups.CreateUser.class)
 	private String name;
-	@NotBlank
-	@Email
+	@NotBlank(groups = ValidationGroups.CreateUser.class)
+	@Email(groups = {ValidationGroups.CreateUser.class, ValidationGroups.UpdateUser.class})
 	private String email;
 }

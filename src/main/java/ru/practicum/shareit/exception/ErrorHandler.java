@@ -11,30 +11,40 @@ import ru.practicum.shareit.exception.exceptions.EntityAlreadyExistsException;
 import ru.practicum.shareit.exception.exceptions.NotFoundException;
 import ru.practicum.shareit.exception.model.ErrorResponse;
 
+import javax.validation.ConstraintViolationException;
+
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
 
-	Gson gson = new Gson();
+	private Gson gson = new Gson();
 
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.CONFLICT)
 	public ErrorResponse handleEntityAlreadyExistsException(EntityAlreadyExistsException e) {
 		log.debug("Get status 409. CONFLICT {}", e.getMessage(), e);
-		return new ErrorResponse(gson.toJson(e.getMessage()));
+		return new ErrorResponse(e.getMessage());
 	}
 
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ErrorResponse handleNotFound(final NotFoundException e) {
 		log.debug("Get status 404 Not found {}", e.getMessage(), e);
-		return new ErrorResponse(gson.toJson(e.getMessage()));
+		return new ErrorResponse(e.getMessage());
 	}
 
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ErrorResponse authorizationError(final AuthorizationErrorException e) {
 		log.debug("Get status 404 Not found {}", e.getMessage(), e);
-		return new ErrorResponse(gson.toJson(e.getMessage()));
+		return new ErrorResponse(e.getMessage());
 	}
+
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ErrorResponse constraintViolationError(final ConstraintViolationException e) {
+		log.debug("Get status 400 Not found {}", e.getMessage(), e);
+		return new ErrorResponse(e.getMessage());
+	}
+
 }
