@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.exception.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -73,7 +73,7 @@ public class InMemoryItemRepositoryTest {
 		List<Item> newItems = new ArrayList<>();
 		newItems.add(item1);
 		newItems.add(item2);
-		assertArrayEquals(itemRepository.getOwnerItems(user.getId()).toArray(), newItems.toArray());
+		assertArrayEquals(itemRepository.findByOwner(user.getId()).toArray(), newItems.toArray());
 	}
 
 	@Test
@@ -85,9 +85,9 @@ public class InMemoryItemRepositoryTest {
 		itemRepository.addItem(item2);
 		List<Item> newItems = new ArrayList<>();
 		newItems.add(item1);
-		assertArrayEquals(itemRepository.searchItemsByText("em1").toArray(), newItems.toArray());
+		assertArrayEquals(itemRepository.findDescriptionContainingOrNameContainingIgnoreCase("em1").toArray(), newItems.toArray());
 		newItems.add(item2);
-		assertArrayEquals(itemRepository.searchItemsByText("ite").toArray(), newItems.toArray());
+		assertArrayEquals(itemRepository.findDescriptionContainingOrNameContainingIgnoreCase("ite").toArray(), newItems.toArray());
 	}
 
 	@Test
@@ -97,6 +97,6 @@ public class InMemoryItemRepositoryTest {
 		itemRepository.addItem(item1);
 		item2.setOwner(user.getId());
 		itemRepository.addItem(item2);
-		assertEquals(itemRepository.searchItemsByText("").toArray().length, 0);
+		assertEquals(itemRepository.findDescriptionContainingOrNameContainingIgnoreCase("").toArray().length, 0);
 	}
 }
