@@ -54,6 +54,7 @@ public class ErrorHandler {
 		log.debug("Get status 409  {}", e.getMessage(), e);
 		return new ErrorResponse(e.getMessage());
 	}
+
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.CONFLICT)
 	public ErrorResponse duplicateRequestError(final DuplicateRequestException e) {
