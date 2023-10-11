@@ -37,10 +37,10 @@ public class UserServiceImpl implements UserService {
 	public UserDto updateUser(Integer id, UserDto userDto) {
 		uniqueEmail(id,userDto.getEmail());
 		User user = userRepository.findById(id).orElseThrow();
-		if (userDto.getName()!=null) {
+		if (userDto.getName() != null) {
 			user.setName(userDto.getName());
 		}
-		if (userDto.getEmail()!=null) {
+		if (userDto.getEmail() != null) {
 			user.setEmail(userDto.getEmail());
 		}
 		log.info("Update user {}", user);
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
 
 	private void uniqueEmail(Integer id, String email) {
 		List<User> users = userRepository.findByEmailIgnoreCase(email);
-		if (users!=null && (users.size()>1 || (users.size()==1 && !users.get(0).getId().equals(id)))) {
+		if (users != null && (users.size() > 1 || (users.size() == 1 && !users.get(0).getId().equals(id)))) {
 			throw new DuplicateRequestException("Email already exists: " + email);
 		}
 	}

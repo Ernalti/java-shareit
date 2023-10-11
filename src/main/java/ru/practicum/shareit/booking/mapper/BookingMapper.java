@@ -10,9 +10,12 @@ import java.util.stream.Collectors;
 
 public class BookingMapper {
 
-	private BookingMapper() {}
+	private BookingMapper() {
+
+	}
+
 	public static BookingDto toBookingDto(Booking booking) {
-		if (booking!=null) {
+		if (booking != null) {
 			return BookingDto.builder()
 					.id(booking.getId())
 					.start(booking.getStart())

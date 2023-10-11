@@ -1,6 +1,5 @@
 package ru.practicum.shareit.exception;
 
-import com.google.gson.Gson;
 import com.sun.jdi.request.DuplicateRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
