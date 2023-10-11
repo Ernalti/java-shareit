@@ -47,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public ItemDto addItem(Integer userId, ItemDto itemDto) {
 		try {
-			User user = userRepository.findById(userId).orElseThrow();
+			User user = userRepository.getById(userId);
 			Item item = ItemMapper.toItem(itemDto, user);
 			log.info("Add item {}", item);
 			item.setOwner(user);
