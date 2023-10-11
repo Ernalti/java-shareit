@@ -23,12 +23,18 @@ public class ItemMapper {
 	}
 
 	public static Item toItem(ItemDto itemDto, User owner) {
-		return new Item(
-				itemDto.getId(),
-				itemDto.getName(),
-				itemDto.getDescription(),
-				itemDto.getAvailable(),
-				owner);
+		return Item.builder()
+				.name(itemDto.getName())
+				.description(itemDto.getDescription())
+				.available(itemDto.getAvailable())
+				.owner(owner)
+				.build();
+//				new Item(
+//				itemDto.getId(),
+//				itemDto.getName(),
+//				itemDto.getDescription(),
+//				itemDto.getAvailable(),
+//				owner);
 	}
 
 	public static List<ItemResponseDto> toListItemDto(List<Item> items) {
