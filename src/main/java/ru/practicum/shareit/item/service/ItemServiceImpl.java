@@ -46,12 +46,13 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public ItemResponseDto addItem(Integer userId, ItemDto itemDto) {
 
-		return null;
-//			User user = userRepository.findById(userId).orElseThrow();
-//			Item item = ItemMapper.toItem(itemDto, user);
-//			log.info("Add item {}", item);
-//			item.setOwner(user);
+//		return null;
+			User user = userRepository.findById(userId).orElseThrow();
+			Item item = ItemMapper.toItem(itemDto, user);
+			log.info("Add item {}", item);
+			item.setOwner(user);
 //			return ItemMapper.toItemDto(itemRepository.save(item));
+		return ItemMapper.toItemDto(item);
 	}
 
 	@Override
