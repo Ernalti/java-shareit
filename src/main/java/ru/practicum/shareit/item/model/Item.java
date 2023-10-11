@@ -33,7 +33,7 @@ public class Item {
 	private Boolean available;
 
 	@ManyToOne
-	@Column(name = "owner_id")
+	@JoinColumn(name = "owner_id")
 	private User owner;
 
 }
