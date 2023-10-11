@@ -12,6 +12,7 @@ import ru.practicum.shareit.exception.exceptions.CommentException;
 import ru.practicum.shareit.exception.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
@@ -45,7 +46,7 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public ItemDto addItem(Integer userId, ItemDto itemDto) {
+	public ItemResponseDto addItem(Integer userId, ItemDto itemDto) {
 		try {
 			User user = userRepository.findById(userId).orElseThrow();
 			Item item = ItemMapper.toItem(itemDto, user);
@@ -58,7 +59,7 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public ItemDto updateItem(Integer itemId, Integer userId, ItemDto itemDto) {
+	public ItemResponseDto updateItem(Integer itemId, Integer userId, ItemDto itemDto) {
 		User user = userRepository.findById(userId).orElseThrow();
 		Item updatedItem = ItemMapper.toItem(itemDto, user);
 		log.info("Update item with id {} to {}", itemId, updatedItem);
@@ -88,14 +89,14 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public ItemDto getItemById(Integer itemId) {
+	public ItemResponseDto getItemById(Integer itemId) {
 		log.info("Get item by Id {}", itemId);
 		Item item = itemRepository.findById(itemId).orElseThrow();
 		return getItemDtoWithBookings(item);
 	}
 
 	@Override
-	public List<ItemDto> getOwnerItems(Integer userId) {
+	public List<ItemResponseDto> getOwnerItems(Integer userId) {
 		log.info("Get user items. userId = {}", userId);
 		User user = userRepository.findById(userId).orElseThrow();
 		List<Item> itemList = itemRepository.findByOwner(user);
@@ -105,7 +106,7 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public List<ItemDto> searchItemsByText(String text) {
+	public List<ItemResponseDto> searchItemsByText(String text) {
 		if (!text.isBlank()) {
 			log.info("Search item by text {}", text);
 			return ItemMapper.toListItemDto(itemRepository.findByDescriptionContainingIgnoreCaseAndAvailableIsTrueOrNameContainingIgnoreCaseAndAvailableIsTrue(text, text));
@@ -141,8 +142,8 @@ public class ItemServiceImpl implements ItemService {
 		return res;
 	}
 
-	private ItemDto getItemDtoWithBookings(Item item) {
-		ItemDto itemDto = ItemMapper.toItemDto(item);
+	private ItemResponseDto getItemDtoWithBookings(Item item) {
+		ItemResponseDto itemDto = ItemMapper.toItemDto(item);
 		LocalDateTime time = LocalDateTime.now();
 		BookingDto lastBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartBeforeAndStatusOrderByStartDesc(item, time, BookingStatus.APPROVED));
 //		Booking boo;

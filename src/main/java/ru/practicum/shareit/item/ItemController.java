@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
@@ -29,14 +30,14 @@ public class ItemController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") int userId,
-	                       @Valid @RequestBody ItemDto itemDto) {
+	public ItemResponseDto addItem(@RequestHeader("X-Sharer-User-Id") int userId,
+	                               @Valid @RequestBody ItemDto itemDto) {
 		log.info("Add item {} to user {}", itemDto,userId);
 		return itemService.addItem(userId, itemDto);
 	}
 
 	@PatchMapping("/{itemId}")
-	public ItemDto updateItem(@PathVariable int itemId,
+	public ItemResponseDto updateItem(@PathVariable int itemId,
 	                          @RequestHeader("X-Sharer-User-Id") int userId,
 	                          @RequestBody ItemDto itemDto) {
 		log.info("Update item {} to user {}", itemDto,userId);
@@ -44,19 +45,19 @@ public class ItemController {
 	}
 
 	@GetMapping("/{itemId}")
-	public ItemDto getItemById(@PathVariable int itemId) {
+	public ItemResponseDto getItemById(@PathVariable int itemId) {
 		log.info("Get item by Id {}", itemId);
 		return itemService.getItemById(itemId);
 	}
 
 	@GetMapping
-	public List<ItemDto> getOwnerItems(@RequestHeader("X-Sharer-User-Id") int userId) {
+	public List<ItemResponseDto> getOwnerItems(@RequestHeader("X-Sharer-User-Id") int userId) {
 		log.info("Get user items. userId = {}", userId);
 		return itemService.getOwnerItems(userId);
 	}
 
 	@GetMapping("/search")
-	public List<ItemDto> searchItemsByText(@RequestParam("text") String text) {
+	public List<ItemResponseDto> searchItemsByText(@RequestParam("text") String text) {
 		log.info("Search item by text {}", text);
 		return itemService.searchItemsByText(text);
 	}
