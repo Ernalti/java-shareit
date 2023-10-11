@@ -12,14 +12,13 @@ import ru.practicum.shareit.exception.exceptions.*;
 import ru.practicum.shareit.exception.model.ErrorResponse;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NonUniqueResultException;
 import javax.validation.ConstraintViolationException;
 import java.util.NoSuchElementException;
 
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
-
-	private Gson gson = new Gson();
 
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.CONFLICT)
@@ -78,9 +77,9 @@ public class ErrorHandler {
 	}
 
 	@ExceptionHandler
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ErrorResponse noSuchElementError(final NoSuchElementException e) {
-		log.debug("Get status 400 {}", e.getMessage(), e);
+		log.debug("Get status 404 {}", e.getMessage(), e);
 		return new ErrorResponse(e.getMessage());
 	}
 
@@ -93,7 +92,21 @@ public class ErrorHandler {
 
 	@ExceptionHandler
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ErrorResponse unsupportedStatusError(final UnsupportedStatusException e) {
+	public ErrorResponse statusError(final StatusException e) {
+		log.debug("Get status 400 {}", e.getMessage(), e);
+		return new ErrorResponse(e.getMessage());
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ErrorResponse commentError(final CommentException e) {
+		log.debug("Get status 400 {}", e.getMessage(), e);
+		return new ErrorResponse(e.getMessage());
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ErrorResponse nonUniqueResultError(final NonUniqueResultException e) {
 		log.debug("Get status 400 {}", e.getMessage(), e);
 		return new ErrorResponse(e.getMessage());
 	}

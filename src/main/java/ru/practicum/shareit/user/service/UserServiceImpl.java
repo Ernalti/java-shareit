@@ -9,7 +9,6 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 
@@ -37,7 +36,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDto updateUser(Integer id, UserDto userDto) {
 		uniqueEmail(id,userDto.getEmail());
-		User user = userRepository.findById(id).get();
+		User user = userRepository.findById(id).orElseThrow();
 		if (userDto.getName()!=null) {
 			user.setName(userDto.getName());
 		}
@@ -51,7 +50,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDto getUserById(Integer id) {
 		log.info("Get user by id {}", id);
-		return UserMapper.toUserDto(userRepository.findById(id).get());
+		return UserMapper.toUserDto(userRepository.findById(id).orElseThrow());
 	}
 
 	@Override

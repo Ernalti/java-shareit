@@ -3,9 +3,7 @@ package ru.practicum.shareit.booking.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.dto.BookingRequestDto;
-import ru.practicum.shareit.booking.dto.BookingResponseDto;
-import ru.practicum.shareit.booking.enums.BookingState;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -35,103 +33,109 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public BookingResponseDto addBooking(Integer userId, BookingRequestDto bookingRequestDto) {
-		Item item = itemRepository.findById(bookingRequestDto.getItemId()).get();
+	public BookingDto addBooking(Integer userId, BookingDto bookingDto) {
+		Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow();
 		if (item.getOwner().getId().equals(userId)) {
 			throw new NotFoundException("The user " + userId + " cannot booking his item " + item);
 		}
 		if (!item.getAvailable()) {
 			throw new NotAvailableException("Item " + item.getId() + " not available");
 		}
-		User user = userRepository.findById(userId).get();
-		Booking booking = BookingMapper.toBooking(bookingRequestDto, user, item);
+		User user = userRepository.findById(userId).orElseThrow();
+		Booking booking = BookingMapper.toBooking(bookingDto, user, item);
 		booking.setStatus(BookingStatus.WAITING);
 		if (!booking.getEnd().isAfter(booking.getStart())) {
 			throw new DateTimeException("End time can't be before start");
 		}
 		Booking res = bookingRepository.save(booking);
-		log.info("Add booking: {}",res);
+		log.info("Add booking: {}", res);
 		return BookingMapper.toBookingDto(res);
 	}
 
 	@Override
-	public BookingResponseDto approveBooking(Integer userId, Integer id, Boolean approved) {
-		Booking booking = bookingRepository.findById(id).get();
+	public BookingDto approveBooking(Integer userId, Integer id, Boolean approved) {
+		Booking booking = bookingRepository.findById(id).orElseThrow();
 		Item item = booking.getItem();
 		if (!item.getOwner().getId().equals(userId)) {
 			throw new AuthorizationErrorException("User " + userId + " is not the owner of the item");
 		}
+		if (!booking.getStatus().equals(BookingStatus.WAITING)) {
+			throw new StatusException("You can't change status after it has been changed");
+		}
 		BookingStatus status = approved ? BookingStatus.APPROVED : BookingStatus.REJECTED;
 		booking.setStatus(status);
 		Booking res = bookingRepository.save(booking);
-		log.info("Booking approved: {} ",res);
+		log.info("Booking approved: {} ", res);
 		return BookingMapper.toBookingDto(res);
 	}
 
 	@Override
-	public BookingResponseDto getBooking(Integer id) {
-		Booking res = bookingRepository.findById(id).get();
-		log.info("Get booking: {}",res);
-		return BookingMapper.toBookingDto(res);
+	public BookingDto getBooking(Integer userId, Integer id) {
+		Booking booking = bookingRepository.findById(id).orElseThrow();
+		if (!userId.equals(booking.getBooker().getId()) && !userId.equals(booking.getItem().getOwner().getId())) {
+			throw new AuthorizationErrorException("User " + userId + " can't view booking " + id);
+		}
+		log.info("Get booking: {}", booking);
+		return BookingMapper.toBookingDto(booking);
 	}
 
 	@Override
-	public List<BookingResponseDto> getOwnerBookings(Integer userId, BookingState state) {
-		User user = userRepository.findById(userId).get();
+	public List<BookingDto> getOwnerBookings(Integer userId, String state) {
+		User user = userRepository.findById(userId).orElseThrow();
 		LocalDateTime time = LocalDateTime.now();
 		List<Booking> res = null;
 		switch (state) {
-			case ALL:
+			case "ALL":
 				res = bookingRepository.findByItemOwnerOrderByStartDesc(user);
 				break;
-			case CURRENT:
-				res = bookingRepository.findByItemOwnerAndStartAfterAndEndBeforeOrderByStartDesc(user,time, time);
+			case "CURRENT":
+				res = bookingRepository.findByItemOwnerAndStartBeforeAndEndAfterOrderByStartDesc(user, time, time);
 				break;
-			case PAST:
-				res = bookingRepository.findByItemOwnerAndStartBeforeOrderByStartDesc(user,time);
+			case "PAST":
+				res = bookingRepository.findByItemOwnerAndEndBeforeAndStatusOrderByStartDesc(user, time, BookingStatus.APPROVED);
 				break;
-			case FUTURE:
-				res = bookingRepository.findByItemOwnerAndEndAfterOrderByStartDesc(user,time);
+			case "FUTURE":
+				res = bookingRepository.findByItemOwnerAndEndAfterOrderByStartDesc(user, time);
 				break;
-			case WAITING:
+			case "WAITING":
 				res = bookingRepository.findByItemOwnerAndStatusOrderByStartDesc(user, BookingStatus.WAITING);
 				break;
-			case REJECTED:
+			case "REJECTED":
 				res = bookingRepository.findByItemOwnerAndStatusOrderByStartDesc(user, BookingStatus.REJECTED);
 				break;
 			default:
-				throw new UnsupportedStatusException("Unknown state: " + state);
+				throw new StatusException("Unknown state: " + state);
 
 		}
 		return BookingMapper.toListBookingDto(res);
 	}
 
 	@Override
-	public List<BookingResponseDto> getBookings(Integer userId, BookingState state) {
-		User user = userRepository.findById(userId).get();
+	public List<BookingDto> getBookings(Integer userId, String state) {
+		User user = userRepository.findById(userId).orElseThrow();
 		LocalDateTime time = LocalDateTime.now();
 		List<Booking> res = null;
 		switch (state) {
-			case ALL:
+			case "ALL":
 				res = bookingRepository.findByBookerOrderByStartDesc(user);
 				break;
-			case CURRENT:
-				res = bookingRepository.findByBookerAndStartAfterAndEndBeforeOrderByStartDesc(user,time, time);
+			case "CURRENT":
+				res = bookingRepository.findByBookerAndStartBeforeAndEndAfterOrderByStartDesc(user, time, time);
 				break;
-			case PAST:
-				res = bookingRepository.findByBookerAndStartBeforeOrderByStartDesc(user,time);
+			case "PAST":
+				res = bookingRepository.findByBookerAndEndBeforeAndStatusOrderByStartDesc(user, time, BookingStatus.APPROVED);
 				break;
-			case FUTURE:
-				res = bookingRepository.findByBookerAndEndAfterOrderByStartDesc(user,time);
+			case "FUTURE":
+				res = bookingRepository.findByBookerAndEndAfterOrderByStartDesc(user, time);
 				break;
-			case WAITING:
+			case "WAITING":
 				res = bookingRepository.findByBookerAndStatusOrderByStartDesc(user, BookingStatus.WAITING);
 				break;
-			case REJECTED:
+			case "REJECTED":
 				res = bookingRepository.findByBookerAndStatusOrderByStartDesc(user, BookingStatus.REJECTED);
 				break;
 			default:
-				throw new UnsupportedStatusException("Unknown state: " + state);
+				throw new StatusException("Unknown state: " + state);
 		}
 		return BookingMapper.toListBookingDto(res);
 	}
