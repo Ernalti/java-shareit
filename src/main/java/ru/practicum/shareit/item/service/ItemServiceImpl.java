@@ -64,7 +64,7 @@ public class ItemServiceImpl implements ItemService {
 		log.info("Update item with id {} to {}", itemId, updatedItem);
 		Item item = itemRepository.findById(itemId).orElseThrow();
 		updatedItem.setId(itemId);
-		if (userId != item.getOwner().getId()) {
+		if (!userId.equals(item.getOwner().getId())) {
 			throw new AuthorizationErrorException("User " + userId + "is not the owner of the item");
 		}
 
