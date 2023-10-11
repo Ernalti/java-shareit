@@ -54,7 +54,7 @@ public class ItemServiceImpl implements ItemService {
 			Item res = itemRepository.save(item);
 //			return ItemMapper.toItemDto(itemRepository.save(item));
 			return ItemMapper.toItemDto(item);
-		} catch (Exception e){
+		} catch (Exception e) {
 			throw new AuthorizationErrorException(e.getMessage());
 		}
 	}
