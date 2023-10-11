@@ -45,7 +45,7 @@ public class ItemServiceImpl implements ItemService {
 
 	@Override
 	public ItemResponseDto addItem(Integer userId, ItemDto itemDto) {
-
+		try {
 //		return null;
 			User user = userRepository.findById(userId).orElseThrow();
 			Item item = ItemMapper.toItem(itemDto, user);
@@ -53,7 +53,10 @@ public class ItemServiceImpl implements ItemService {
 			item.setOwner(user);
 			Item res = itemRepository.save(item);
 //			return ItemMapper.toItemDto(itemRepository.save(item));
-		return ItemMapper.toItemDto(item);
+			return ItemMapper.toItemDto(item);
+		} catch (Exception e){
+			throw new AuthorizationErrorException(e.getMessage());
+		}
 	}
 
 	@Override
