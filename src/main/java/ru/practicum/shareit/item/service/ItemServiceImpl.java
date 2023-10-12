@@ -60,32 +60,36 @@ public class ItemServiceImpl implements ItemService {
 
 	@Override
 	public ItemDto updateItem(Integer itemId, Integer userId, ItemDto itemDto) {
-		User user = userRepository.findById(userId).orElseThrow();
-		Item updatedItem = ItemMapper.toItem(itemDto, user);
-		log.info("Update item with id {} to {}", itemId, updatedItem);
-		Item item = itemRepository.findById(itemId).orElseThrow();
-		updatedItem.setId(itemId);
-		if (!userId.equals(item.getOwner().getId())) {
-			throw new AuthorizationErrorException("User " + userId + "is not the owner of the item");
+		try {
+			User user = userRepository.findById(userId).orElseThrow();
+			Item updatedItem = ItemMapper.toItem(itemDto, user);
+			log.info("Update item with id {} to {}", itemId, updatedItem);
+			Item item = itemRepository.findById(itemId).orElseThrow();
+			updatedItem.setId(itemId);
+			if (!userId.equals(item.getOwner().getId())) {
+				throw new AuthorizationErrorException("User " + userId + "is not the owner of the item");
+			}
+
+			String name = updatedItem.getName();
+
+			if (name == null || name.isBlank()) {
+				updatedItem.setName(item.getName());
+			}
+
+			String description = updatedItem.getDescription();
+			if (description == null || description.isBlank()) {
+				updatedItem.setDescription(item.getDescription());
+			}
+
+			Boolean available = updatedItem.getAvailable();
+			if (available == null) {
+				updatedItem.setAvailable(item.getAvailable());
+			}
+
+			return getItemDtoWithBookings(itemRepository.save(updatedItem));
+		} catch (Exception e) {
+			throw new NotFoundException(e.getMessage());
 		}
-
-		String name = updatedItem.getName();
-
-		if (name == null || name.isBlank()) {
-			updatedItem.setName(item.getName());
-		}
-
-		String description = updatedItem.getDescription();
-		if (description == null || description.isBlank()) {
-			updatedItem.setDescription(item.getDescription());
-		}
-
-		Boolean available = updatedItem.getAvailable();
-		if (available == null) {
-			updatedItem.setAvailable(item.getAvailable());
-		}
-
-		return getItemDtoWithBookings(itemRepository.save(updatedItem));
 	}
 
 	@Override
