@@ -2,10 +2,13 @@ package ru.practicum.shareit.item.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.exceptions.AuthorizationErrorException;
 import ru.practicum.shareit.exception.exceptions.CommentException;
@@ -24,10 +27,12 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 public class ItemServiceImpl implements ItemService {
 
 	private final ItemRepository itemRepository;
@@ -44,7 +49,8 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public ItemDto addItem(Integer userId, ItemDto itemDto) {
+	@Transactional
+	public ItemDto addItem(int userId, ItemDto itemDto) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User " + userId + " not found"));
 		Item item = ItemMapper.toItem(itemDto, user);
 		log.info("Add item {}", item);
@@ -53,13 +59,14 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public ItemDto updateItem(Integer itemId, Integer userId, ItemDto itemDto) {
+	@Transactional
+	public ItemDto updateItem(int itemId, int userId, ItemDto itemDto) {
 		User user = userRepository.findById(userId).orElseThrow();
 		Item updatedItem = ItemMapper.toItem(itemDto, user);
 		log.info("Update item with id {} to {}", itemId, updatedItem);
 		Item item = itemRepository.findById(itemId).orElseThrow();
 		updatedItem.setId(itemId);
-		if (!userId.equals(item.getOwner().getId())) {
+		if (userId!=item.getOwner().getId()) {
 			throw new AuthorizationErrorException("User " + userId + "is not the owner of the item");
 		}
 
@@ -82,20 +89,18 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public ItemDto getItemById(Integer itemId, Integer userId) {
+	public ItemDto getItemById(int itemId, int userId) {
 		log.info("Get item by Id {}", itemId);
 		Item item = itemRepository.findById(itemId).orElseThrow();
 		return getItemDtoWithBookings(item, userId);
 	}
 
 	@Override
-	public List<ItemDto> getOwnerItems(Integer userId) {
+	public List<ItemDto> getOwnerItems(int userId) {
 		log.info("Get user items. userId = {}", userId);
 		User user = userRepository.findById(userId).orElseThrow();
 		List<Item> itemList = itemRepository.findByOwner(user);
-		return itemList.stream()
-				.map(item -> getItemDtoWithBookings(item, userId))
-				.collect(Collectors.toList());
+		return getItemListDtoWithBookings(itemList, userId);
 	}
 
 	@Override
@@ -109,12 +114,14 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
+	@Transactional
 	public void clearItems() {
 		itemRepository.deleteAll();
 	}
 
 	@Override
-	public CommentDto addComment(Integer itemId, Integer userId, CommentDto commentDto) {
+	@Transactional
+	public CommentDto addComment(int itemId, int userId, CommentDto commentDto) {
 		Item item = itemRepository.findById(itemId).orElseThrow();
 		User user = userRepository.findById(userId).orElseThrow();
 		int userBookingItem = bookingRepository.findByItemAndBookerAndStatusAndEndBefore(item, user, BookingStatus.APPROVED, LocalDateTime.now()).size();
@@ -128,14 +135,17 @@ public class ItemServiceImpl implements ItemService {
 		return CommentMapper.toCommentDto(commentRepository.save(comment));
 	}
 
-	private ItemDto getItemDtoWithBookings(Item item, Integer userId) {
+	private ItemDto getItemDtoWithBookings(Item item, int userId) {
 		ItemDto itemDto = ItemMapper.toItemDto(item);
 		LocalDateTime time = LocalDateTime.now();
 		BookingDto lastBooking = null;
 		BookingDto nextBooking = null;
-		if (userId.equals(item.getOwner().getId())) {
-			lastBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartBeforeAndStatusOrderByStartDesc(item, time, BookingStatus.APPROVED));
-			nextBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartAfterAndStatusOrderByStartAsc(item, time, BookingStatus.APPROVED));
+		Sort asc = Sort.by("start").ascending();
+		Sort desc = Sort.by("start").descending();
+
+		if (userId==item.getOwner().getId()) {
+			lastBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartBeforeAndStatus(item, time, BookingStatus.APPROVED, desc).orElse(null));
+			nextBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartAfterAndStatus(item, time, BookingStatus.APPROVED, asc).orElse(null));
 			cropBookingDto(lastBooking);
 			cropBookingDto(nextBooking);
 		}
@@ -146,12 +156,49 @@ public class ItemServiceImpl implements ItemService {
 		return itemDto;
 	}
 
-	private void cropBookingDto(BookingDto bookingDto) {
+	private List<ItemDto> getItemListDtoWithBookings(List<Item> itemList, int userId) {
+		List<Item> findItemList = itemList.stream()
+				.filter(item -> item.getOwner().getId()==userId)
+				.collect(Collectors.toList());
+		Sort desc = Sort.by("start").descending();
+		Sort asc = Sort.by("start").ascending();
+		List<Booking> lastBookings = bookingRepository.findlastBookings(findItemList,LocalDateTime.now(),BookingStatus.APPROVED,desc);
+		List<Booking> nextBookings = bookingRepository.findNextBookings(findItemList,LocalDateTime.now(),BookingStatus.APPROVED,asc);
+		List<ItemDto> itemDtoList = new ArrayList<>();
+		List <Comment> comments = commentRepository.findAllByItems(itemList);
+
+		for (Item item : itemList) {
+			ItemDto itemDto = ItemMapper.toItemDto(item);
+
+			Booking lastBooking = lastBookings.stream()
+					.filter(booking -> booking.getItem().getId()==item.getId())
+					.findFirst()
+					.orElse(null);
+
+			itemDto.setLastBooking(cropBookingDto(BookingMapper.toBookingDto(lastBooking)));
+
+			Booking nextBooking = nextBookings.stream()
+					.filter(booking -> booking.getItem().getId()==item.getId())
+					.findFirst()
+					.orElse(null);
+			itemDto.setNextBooking(cropBookingDto(BookingMapper.toBookingDto(nextBooking)));
+
+			List<Comment> itemComments = comments.stream()
+					.filter(comment -> comment.getItem().getId()==item.getId())
+					.collect(Collectors.toList());
+			itemDto.setComments(CommentMapper.toListCommentDto(itemComments));
+			itemDtoList.add(itemDto);
+		}
+		return itemDtoList;
+	}
+
+	private BookingDto cropBookingDto(BookingDto bookingDto) {
 		if (bookingDto != null) {
 			bookingDto.setBookerId(bookingDto.getBooker().getId());
 			bookingDto.setItem(null);
 			bookingDto.setBooker(null);
 		}
+		return bookingDto;
 	}
 
 }

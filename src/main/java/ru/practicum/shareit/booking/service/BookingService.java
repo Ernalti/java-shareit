@@ -6,14 +6,14 @@ import java.util.List;
 
 public interface BookingService {
 
-	BookingDto addBooking(Integer userId, BookingDto bookingDto);
+	BookingDto addBooking(int userId, BookingDto bookingDto);
 
-	BookingDto approveBooking(Integer userId, Integer id, Boolean approved);
+	BookingDto approveBooking(int userId, int id, boolean approved);
 
-	BookingDto getBooking(Integer userId, Integer id);
+	BookingDto getBooking(int userId, int id);
 
-	List<BookingDto> getBookings(Integer userId, String state);
+	List<BookingDto> getBookings(int userId, String state);
 
-	List<BookingDto> getOwnerBookings(Integer userId, String state);
+	List<BookingDto> getOwnerBookings(int userId, String state);
 
 }

@@ -17,7 +17,7 @@ import java.util.List;
 @Builder
 public class ItemDto {
 
-	private Integer id;
+	private int id;
 	@NotBlank
 	private String name;
 	@NotBlank

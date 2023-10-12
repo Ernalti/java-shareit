@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.booking.enums.BookingStatus;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
@@ -22,7 +20,7 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BookingDto {
 
-	private Integer id;
+	private int id;
 
 	@NotNull
 	@FutureOrPresent
@@ -32,13 +30,25 @@ public class BookingDto {
 	@Future
 	private LocalDateTime end;
 
-	private Integer itemId;
+	private int itemId;
 
-	private Item item;
+	private ShortItem item;
 
-	private User booker;
+	private Booker booker;
 
-	private Integer bookerId;
+	private int bookerId;
 
 	private BookingStatus status;
+
+	@Data
+	public static class Booker {
+		private final int id;
+		private final String name;
+	}
+
+	@Data
+	public static class ShortItem {
+		private final int id;
+		private final String name;
+	}
 }

@@ -37,13 +37,13 @@ public class UserController {
 
 	@PatchMapping("/{id}")
 	@Validated(ValidationGroups.UpdateUser.class)
-	public UserDto updateUser(@PathVariable Integer id, @Valid @RequestBody UserDto userDto) {
+	public UserDto updateUser(@PathVariable int id, @Valid @RequestBody UserDto userDto) {
 		log.info("Update user {}", userDto);
 		return userService.updateUser(id, userDto);
 	}
 
 	@GetMapping("/{id}")
-	public UserDto getUserById(@PathVariable Integer id) {
+	public UserDto getUserById(@PathVariable int id) {
 		log.info("Get user by id {}", id);
 		return userService.getUserById(id);
 	}
@@ -56,7 +56,7 @@ public class UserController {
 
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteUser(@PathVariable Integer id) {
+	public void deleteUser(@PathVariable int id) {
 		log.info("Delete user with id {}",id);
 		userService.deleteUser(id);
 	}

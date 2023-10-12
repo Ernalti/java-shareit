@@ -20,8 +20,8 @@ public class BookingMapper {
 					.id(booking.getId())
 					.start(booking.getStart())
 					.end(booking.getEnd())
-					.item(booking.getItem())
-					.booker(booking.getBooker())
+					.item(new BookingDto.ShortItem(booking.getItem().getId(), booking.getItem().getName()))
+					.booker(new BookingDto.Booker(booking.getBooker().getId(), booking.getBooker().getName()))
 					.status(booking.getStatus())
 					.build();
 		} else {
@@ -43,4 +43,6 @@ public class BookingMapper {
 				.map(BookingMapper::toBookingDto)
 				.collect(Collectors.toList());
 	}
+
+
 }
