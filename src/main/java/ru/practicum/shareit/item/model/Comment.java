@@ -23,9 +23,11 @@ public class Comment {
 	private String text;
 
 	@ManyToOne
+	@JoinColumn(name = "item")
 	private Item item;
 
 	@ManyToOne
+	@JoinColumn(name = "author")
 	private User author;
 
 	private LocalDateTime created;

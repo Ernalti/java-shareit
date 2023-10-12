@@ -31,9 +31,11 @@ public class Booking {
 	private LocalDateTime end;
 
 	@ManyToOne
+	@JoinColumn(name = "item")
 	private Item item;
 
 	@ManyToOne
+	@JoinColumn(name = "booker")
 	private User booker;
 	private BookingStatus status;
 
