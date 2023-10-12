@@ -83,7 +83,7 @@ public class BookingServiceImpl implements BookingService {
 	public List<BookingDto> getOwnerBookings(Integer userId, String state) {
 		User user = userRepository.findById(userId).orElseThrow();
 		LocalDateTime time = LocalDateTime.now();
-		List<Booking> res = null;
+		List<Booking> res;
 		switch (state) {
 			case "ALL":
 				res = bookingRepository.findByItemOwnerOrderByStartDesc(user);
@@ -107,6 +107,7 @@ public class BookingServiceImpl implements BookingService {
 				throw new StatusException("Unknown state: " + state);
 
 		}
+		log.info("Get owner bookings. User: {}; state: {}; result: {}",userId,state, res);
 		return BookingMapper.toListBookingDto(res);
 	}
 
@@ -114,7 +115,7 @@ public class BookingServiceImpl implements BookingService {
 	public List<BookingDto> getBookings(Integer userId, String state) {
 		User user = userRepository.findById(userId).orElseThrow();
 		LocalDateTime time = LocalDateTime.now();
-		List<Booking> res = null;
+		List<Booking> res;
 		switch (state) {
 			case "ALL":
 				res = bookingRepository.findByBookerOrderByStartDesc(user);
@@ -137,6 +138,7 @@ public class BookingServiceImpl implements BookingService {
 			default:
 				throw new StatusException("Unknown state: " + state);
 		}
+		log.info("Get owner bookings. User: {}; state: {}; result: {}",userId,state, res);
 		return BookingMapper.toListBookingDto(res);
 	}
 }

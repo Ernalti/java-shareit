@@ -32,8 +32,7 @@ public class BookingController {
 	public BookingDto addBooking(@RequestHeader("X-Sharer-User-Id") Integer userId,
 	                             @Valid @RequestBody BookingDto bookingDto) {
 		log.info("Add booking {}", bookingDto);
-		BookingDto res = bookingService.addBooking(userId, bookingDto);
-		return res;
+		return bookingService.addBooking(userId, bookingDto);
 	}
 
 	@PatchMapping("/{id}")
@@ -54,13 +53,14 @@ public class BookingController {
 	@GetMapping
 	public List<BookingDto> getBookings(@RequestHeader("X-Sharer-User-Id") Integer userId,
 	                                    @RequestParam(defaultValue = "ALL") String state) {
+		log.info("Get bookings. User: {}; State: {}", userId, state);
 		return bookingService.getBookings(userId, state);
 	}
 
 	@GetMapping("/owner")
 	public List<BookingDto> getOwnerBookings(@RequestHeader("X-Sharer-User-Id") Integer userId,
-
 	                                         @RequestParam(defaultValue = "ALL") String state) {
+		log.info("Get owner bookings. User {}; State", userId, state);
 		return bookingService.getOwnerBookings(userId, state);
 	}
 }

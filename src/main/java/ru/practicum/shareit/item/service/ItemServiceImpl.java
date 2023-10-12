@@ -21,7 +21,6 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,49 +45,40 @@ public class ItemServiceImpl implements ItemService {
 
 	@Override
 	public ItemDto addItem(Integer userId, ItemDto itemDto) {
-		try {
-			User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User " + userId + " not found"));
-			Item item = ItemMapper.toItem(itemDto, user);
-			user.getId();
-			log.info("Add item {}", item);
-			item.setOwner(user);
-			return ItemMapper.toItemDto(itemRepository.save(item));
-		} catch (EntityNotFoundException e) {
-			throw new NotFoundException("User " + userId + " not found");
-		}
+		User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User " + userId + " not found"));
+		Item item = ItemMapper.toItem(itemDto, user);
+		log.info("Add item {}", item);
+		item.setOwner(user);
+		return ItemMapper.toItemDto(itemRepository.save(item));
 	}
 
 	@Override
 	public ItemDto updateItem(Integer itemId, Integer userId, ItemDto itemDto) {
-		try {
-			User user = userRepository.findById(userId).orElseThrow();
-			Item updatedItem = ItemMapper.toItem(itemDto, user);
-			log.info("Update item with id {} to {}", itemId, updatedItem);
-			Item item = itemRepository.findById(itemId).orElseThrow();
-			updatedItem.setId(itemId);
-			if (!userId.equals(item.getOwner().getId())) {
-				throw new AuthorizationErrorException("User " + userId + "is not the owner of the item");
-			}
-
-			String name = updatedItem.getName();
-
-			if (name == null || name.isBlank()) {
-				updatedItem.setName(item.getName());
-			}
-
-			String description = updatedItem.getDescription();
-			if (description == null || description.isBlank()) {
-				updatedItem.setDescription(item.getDescription());
-			}
-
-			Boolean available = updatedItem.getAvailable();
-			if (available == null) {
-				updatedItem.setAvailable(item.getAvailable());
-			}
-			return getItemDtoWithBookings(itemRepository.save(updatedItem), userId);
-		} catch (Exception e) {
-			throw new NotFoundException(e.getMessage());
+		User user = userRepository.findById(userId).orElseThrow();
+		Item updatedItem = ItemMapper.toItem(itemDto, user);
+		log.info("Update item with id {} to {}", itemId, updatedItem);
+		Item item = itemRepository.findById(itemId).orElseThrow();
+		updatedItem.setId(itemId);
+		if (!userId.equals(item.getOwner().getId())) {
+			throw new AuthorizationErrorException("User " + userId + "is not the owner of the item");
 		}
+
+		String name = updatedItem.getName();
+
+		if (name == null || name.isBlank()) {
+			updatedItem.setName(item.getName());
+		}
+
+		String description = updatedItem.getDescription();
+		if (description == null || description.isBlank()) {
+			updatedItem.setDescription(item.getDescription());
+		}
+
+		Boolean available = updatedItem.getAvailable();
+		if (available == null) {
+			updatedItem.setAvailable(item.getAvailable());
+		}
+		return getItemDtoWithBookings(itemRepository.save(updatedItem), userId);
 	}
 
 	@Override
@@ -127,15 +117,15 @@ public class ItemServiceImpl implements ItemService {
 	public CommentDto addComment(Integer itemId, Integer userId, CommentDto commentDto) {
 		Item item = itemRepository.findById(itemId).orElseThrow();
 		User user = userRepository.findById(userId).orElseThrow();
-		Integer userBookingItem = bookingRepository.findByItemAndBookerAndStatusAndEndBefore(item, user, BookingStatus.APPROVED, LocalDateTime.now()).size();
+		int userBookingItem = bookingRepository.findByItemAndBookerAndStatusAndEndBefore(item, user, BookingStatus.APPROVED, LocalDateTime.now()).size();
 
 		if (userBookingItem == 0) {
 			throw new CommentException("User " + userId + " didn't book item " + itemId);
 		}
-		Comment comment = CommentMapper.toComment(commentDto, item, user);
-		CommentDto res = CommentMapper.toCommentDto(commentRepository.save(comment));
 
-		return res;
+		Comment comment = CommentMapper.toComment(commentDto, item, user);
+		log.info("Add comment to Item {} from user {}. Comment: {}", itemId, userId, comment);
+		return CommentMapper.toCommentDto(commentRepository.save(comment));
 	}
 
 	private ItemDto getItemDtoWithBookings(Item item, Integer userId) {
