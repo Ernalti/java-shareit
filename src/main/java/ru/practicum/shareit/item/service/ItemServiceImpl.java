@@ -47,8 +47,9 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public ItemDto addItem(Integer userId, ItemDto itemDto) {
 		try {
-			User user = userRepository.findById(userId).orElseThrow();
+			User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User " + userId + " not found"));
 			Item item = ItemMapper.toItem(itemDto, user);
+			user.getId();
 			log.info("Add item {}", item);
 			item.setOwner(user);
 			return ItemMapper.toItemDto(itemRepository.save(item));
