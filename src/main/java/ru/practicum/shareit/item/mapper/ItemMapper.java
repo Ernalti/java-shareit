@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.mapper;
 
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -12,8 +13,8 @@ public class ItemMapper {
 	private ItemMapper() {
 	}
 
-	public static ItemDto toItemDto(Item item) {
-		return ItemDto.builder()
+	public static ItemResponseDto toItemDto(Item item) {
+		return ItemResponseDto.builder()
 				.id(item.getId())
 				.name(item.getName())
 				.description(item.getDescription())
@@ -22,15 +23,21 @@ public class ItemMapper {
 	}
 
 	public static Item toItem(ItemDto itemDto, User owner) {
-		return new Item(
-				itemDto.getId(),
-				itemDto.getName(),
-				itemDto.getDescription(),
-				itemDto.getAvailable(),
-				owner);
+		return Item.builder()
+				.name(itemDto.getName())
+				.description(itemDto.getDescription())
+				.available(itemDto.getAvailable())
+//				.owner(owner)
+				.build();
+//				new Item(
+//				itemDto.getId(),
+//				itemDto.getName(),
+//				itemDto.getDescription(),
+//				itemDto.getAvailable(),
+//				owner);
 	}
 
-	public static List<ItemDto> toListItemDto(List<Item> items) {
+	public static List<ItemResponseDto> toListItemDto(List<Item> items) {
 		return items.stream()
 				.map(ItemMapper::toItemDto)
 				.collect(Collectors.toList());
