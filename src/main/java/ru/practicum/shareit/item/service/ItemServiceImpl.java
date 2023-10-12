@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.enums.BookingStatus;
@@ -86,18 +85,17 @@ public class ItemServiceImpl implements ItemService {
 			if (available == null) {
 				updatedItem.setAvailable(item.getAvailable());
 			}
-
-			return getItemDtoWithBookings(itemRepository.save(updatedItem));
+			return getItemDtoWithBookings(itemRepository.save(updatedItem), userId);
 		} catch (Exception e) {
 			throw new NotFoundException(e.getMessage());
 		}
 	}
 
 	@Override
-	public ItemDto getItemById(Integer itemId) {
+	public ItemDto getItemById(Integer itemId, Integer userId) {
 		log.info("Get item by Id {}", itemId);
 		Item item = itemRepository.findById(itemId).orElseThrow();
-		return getItemDtoWithBookings(item);
+		return getItemDtoWithBookings(item, userId);
 	}
 
 	@Override
@@ -106,7 +104,7 @@ public class ItemServiceImpl implements ItemService {
 		User user = userRepository.findById(userId).orElseThrow();
 		List<Item> itemList = itemRepository.findByOwner(user);
 		return itemList.stream()
-				.map(this::getItemDtoWithBookings)
+				.map(item -> getItemDtoWithBookings(item, userId))
 				.collect(Collectors.toList());
 	}
 
@@ -129,53 +127,28 @@ public class ItemServiceImpl implements ItemService {
 	public CommentDto addComment(Integer itemId, Integer userId, CommentDto commentDto) {
 		Item item = itemRepository.findById(itemId).orElseThrow();
 		User user = userRepository.findById(userId).orElseThrow();
-//		commentRepository.findCountByIte
-
 		Integer userBookingItem = bookingRepository.findByItemAndBookerAndStatusAndEndBefore(item, user, BookingStatus.APPROVED, LocalDateTime.now()).size();
-		if (userBookingItem == null) {
-			log.info("NULL");
-			throw new CommentException("User " + userId + " didn't book item " + itemId);
-		}
+
 		if (userBookingItem == 0) {
-			log.info("0");
 			throw new CommentException("User " + userId + " didn't book item " + itemId);
 		}
-		log.info(userBookingItem.toString());
 		Comment comment = CommentMapper.toComment(commentDto, item, user);
 		CommentDto res = CommentMapper.toCommentDto(commentRepository.save(comment));
 
 		return res;
 	}
 
-	private ItemDto getItemDtoWithBookings(Item item) {
+	private ItemDto getItemDtoWithBookings(Item item, Integer userId) {
 		ItemDto itemDto = ItemMapper.toItemDto(item);
 		LocalDateTime time = LocalDateTime.now();
-		Sort asc = Sort.by("start").ascending();
-		Sort desc = Sort.by("end").descending();
-		BookingDto lastBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartBeforeAndStatus(item, time, BookingStatus.APPROVED, desc));
-//		Booking boo;
-//
-//
-//		boo = (bookingRepository.findFirstByItemAndStartBeforeAndStatusOrderByStartDesc(item, time, BookingStatus.APPROVED));
-//		if (boo!=null) {log.info("1 "+boo.getId().toString());}
-//		boo = (bookingRepository.findFirstByItemAndStartBeforeAndStatusOrderByStartAsc(item, time, BookingStatus.APPROVED));
-//		if (boo!=null) {log.info("2 "+boo.getId().toString());}
-//		boo = (bookingRepository.findFirstByItemAndEndBeforeAndStatusOrderByStartDesc(item, time, BookingStatus.APPROVED));
-//		if (boo!=null) {log.info("3 "+boo.getId().toString());}
-//		boo = (bookingRepository.findFirstByItemAndEndBeforeAndStatusOrderByStartAsc(item, time, BookingStatus.APPROVED));
-//		if (boo!=null) {log.info("4 "+boo.getId().toString());}
-//
-//		boo = (bookingRepository.findFirstByItemAndStartAfterAndStatusOrderByStartDesc(item, time, BookingStatus.APPROVED));
-//		if (boo!=null) {log.info("5 "+boo.getId().toString());}
-//		boo = (bookingRepository.findFirstByItemAndStartAfterAndStatusOrderByStartAsc(item, time, BookingStatus.APPROVED));
-//		if (boo!=null) {log.info("6 "+boo.getId().toString());}
-//		boo = (bookingRepository.findFirstByItemAndEndAfterAndStatusOrderByStartDesc(item, time, BookingStatus.APPROVED));
-//		if (boo!=null) {log.info("7 "+boo.getId().toString());}
-//		boo = (bookingRepository.findFirstByItemAndEndAfterAndStatusOrderByStartAsc(item, time, BookingStatus.APPROVED));
-//		if (boo!=null) {log.info("8 "+boo.getId().toString());}
-		BookingDto nextBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartAfterAndStatusOrderByStartAsc(item, time, BookingStatus.APPROVED));
-		cropBookingDto(lastBooking);
-		cropBookingDto(nextBooking);
+		BookingDto lastBooking = null;
+		BookingDto nextBooking = null;
+		if (userId.equals(item.getOwner().getId())) {
+			lastBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartBeforeAndStatusOrderByStartDesc(item, time, BookingStatus.APPROVED));
+			nextBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartAfterAndStatusOrderByStartAsc(item, time, BookingStatus.APPROVED));
+			cropBookingDto(lastBooking);
+			cropBookingDto(nextBooking);
+		}
 		List<CommentDto> comments = CommentMapper.toListCommentDto(commentRepository.findByItemId(item.getId()));
 		itemDto.setLastBooking(lastBooking);
 		itemDto.setNextBooking(nextBooking);

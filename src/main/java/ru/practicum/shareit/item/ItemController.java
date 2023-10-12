@@ -44,9 +44,9 @@ public class ItemController {
 	}
 
 	@GetMapping("/{itemId}")
-	public ItemDto getItemById(@PathVariable int itemId) {
+	public ItemDto getItemById(@PathVariable int itemId, @RequestHeader("X-Sharer-User-Id") int userId) {
 		log.info("Get item by Id {}", itemId);
-		return itemService.getItemById(itemId);
+		return itemService.getItemById(itemId, userId);
 	}
 
 	@GetMapping

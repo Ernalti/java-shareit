@@ -11,7 +11,7 @@ public interface ItemService {
 
 	ItemDto updateItem(Integer itemId, Integer userId, ItemDto itemDto);
 
-	ItemDto getItemById(Integer itemId);
+	ItemDto getItemById(Integer itemId, Integer userId);
 
 	List<ItemDto> getOwnerItems(Integer userId);
 

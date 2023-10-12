@@ -8,10 +8,7 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Integer> {
 
-
 	List<Item> findByOwner(User user);
-
-//	@Query("SELECT i FROM Item i WHERE i.name LIKE %:text% OR i.description LIKE %:text%")
 
 	List<Item> findByDescriptionContainingIgnoreCaseAndAvailableIsTrueOrNameContainingIgnoreCaseAndAvailableIsTrue(String des, String nam);
 
