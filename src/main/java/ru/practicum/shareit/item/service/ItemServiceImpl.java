@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.enums.BookingStatus;
@@ -149,7 +150,9 @@ public class ItemServiceImpl implements ItemService {
 	private ItemDto getItemDtoWithBookings(Item item) {
 		ItemDto itemDto = ItemMapper.toItemDto(item);
 		LocalDateTime time = LocalDateTime.now();
-		BookingDto lastBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndEndBeforeAndStatusOrderByStartDesc(item, time, BookingStatus.APPROVED));
+		Sort asc = Sort.by("start").ascending();
+		Sort desc = Sort.by("end").descending();
+		BookingDto lastBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartBeforeAndStatus(item, time, BookingStatus.APPROVED, desc));
 //		Booking boo;
 //
 //
