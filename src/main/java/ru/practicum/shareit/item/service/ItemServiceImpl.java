@@ -173,10 +173,10 @@ public class ItemServiceImpl implements ItemService {
 		BookingDto nextBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartAfterAndStatusOrderByStartAsc(item, time, BookingStatus.APPROVED));
 		cropBookingDto(lastBooking);
 		cropBookingDto(nextBooking);
-		List<CommentDto> comments = CommentMapper.toListCommentDto(commentRepository.findByItem(item));
+//		List<CommentDto> comments = CommentMapper.toListCommentDto(commentRepository.findByItem(item));
 		itemDto.setLastBooking(lastBooking);
 		itemDto.setNextBooking(nextBooking);
-		itemDto.setComments(comments);
+//		itemDto.setComments(comments);
 		return itemDto;
 	}
 
