@@ -149,7 +149,7 @@ public class ItemServiceImpl implements ItemService {
 	private ItemDto getItemDtoWithBookings(Item item) {
 		ItemDto itemDto = ItemMapper.toItemDto(item);
 		LocalDateTime time = LocalDateTime.now();
-		BookingDto lastBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartBeforeAndStatusOrderByStartAsc(item, time, BookingStatus.APPROVED));
+		BookingDto lastBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartBeforeAndStatusOrderByStartDesc(item, time, BookingStatus.APPROVED));
 //		Booking boo;
 //
 //
@@ -170,7 +170,7 @@ public class ItemServiceImpl implements ItemService {
 //		if (boo!=null) {log.info("7 "+boo.getId().toString());}
 //		boo = (bookingRepository.findFirstByItemAndEndAfterAndStatusOrderByStartAsc(item, time, BookingStatus.APPROVED));
 //		if (boo!=null) {log.info("8 "+boo.getId().toString());}
-		BookingDto nextBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartAfterAndStatusOrderByStartDesc(item, time, BookingStatus.APPROVED));
+		BookingDto nextBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartAfterAndStatusOrderByStartAsc(item, time, BookingStatus.APPROVED));
 		cropBookingDto(lastBooking);
 		cropBookingDto(nextBooking);
 //		List<CommentDto> comments = CommentMapper.toListCommentDto(commentRepository.findByItem(item));
