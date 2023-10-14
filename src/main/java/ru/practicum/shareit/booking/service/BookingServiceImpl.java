@@ -39,7 +39,7 @@ public class BookingServiceImpl implements BookingService {
 	@Transactional
 	public BookingDto addBooking(int userId, BookingDto bookingDto) {
 		Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow();
-		if (item.getOwner().getId()==userId) {
+		if (item.getOwner().getId() == userId) {
 			throw new NotFoundException("The user " + userId + " cannot booking his item " + item);
 		}
 		if (!item.getAvailable()) {
@@ -61,7 +61,7 @@ public class BookingServiceImpl implements BookingService {
 	public BookingDto approveBooking(int userId, int id, boolean approved) {
 		Booking booking = bookingRepository.findById(id).orElseThrow();
 		Item item = booking.getItem();
-		if (item.getOwner().getId()!=userId) {
+		if (item.getOwner().getId() != userId) {
 			throw new AuthorizationErrorException("User " + userId + " is not the owner of the item");
 		}
 		if (!booking.getStatus().equals(BookingStatus.WAITING)) {
@@ -77,7 +77,7 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public BookingDto getBooking(int userId, int id) {
 		Booking booking = bookingRepository.findById(id).orElseThrow();
-		if (userId!=booking.getBooker().getId() && userId!=booking.getItem().getOwner().getId()) {
+		if (userId != booking.getBooker().getId() && userId != booking.getItem().getOwner().getId()) {
 			throw new AuthorizationErrorException("User " + userId + " can't view booking " + id);
 		}
 		log.info("Get booking: {}", booking);

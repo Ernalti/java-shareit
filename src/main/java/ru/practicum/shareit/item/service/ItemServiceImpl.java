@@ -27,7 +27,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -143,7 +142,7 @@ public class ItemServiceImpl implements ItemService {
 		Sort asc = Sort.by("start").ascending();
 		Sort desc = Sort.by("start").descending();
 
-		if (userId==item.getOwner().getId()) {
+		if (userId == item.getOwner().getId()) {
 			lastBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartBeforeAndStatus(item, time, BookingStatus.APPROVED, desc).orElse(null));
 			nextBooking = BookingMapper.toBookingDto(bookingRepository.findFirstByItemAndStartAfterAndStatus(item, time, BookingStatus.APPROVED, asc).orElse(null));
 			cropBookingDto(lastBooking);
@@ -158,7 +157,7 @@ public class ItemServiceImpl implements ItemService {
 
 	private List<ItemDto> getItemListDtoWithBookings(List<Item> itemList, int userId) {
 		List<Item> findItemList = itemList.stream()
-				.filter(item -> item.getOwner().getId()==userId)
+				.filter(item -> item.getOwner().getId() == userId)
 				.collect(Collectors.toList());
 		Sort desc = Sort.by("start").descending();
 		Sort asc = Sort.by("start").ascending();
@@ -171,20 +170,20 @@ public class ItemServiceImpl implements ItemService {
 			ItemDto itemDto = ItemMapper.toItemDto(item);
 
 			Booking lastBooking = lastBookings.stream()
-					.filter(booking -> booking.getItem().getId()==item.getId())
+					.filter(booking -> booking.getItem().getId() == item.getId())
 					.findFirst()
 					.orElse(null);
 
 			itemDto.setLastBooking(cropBookingDto(BookingMapper.toBookingDto(lastBooking)));
 
 			Booking nextBooking = nextBookings.stream()
-					.filter(booking -> booking.getItem().getId()==item.getId())
+					.filter(booking -> booking.getItem().getId() == item.getId())
 					.findFirst()
 					.orElse(null);
 			itemDto.setNextBooking(cropBookingDto(BookingMapper.toBookingDto(nextBooking)));
 
 			List<Comment> itemComments = comments.stream()
-					.filter(comment -> comment.getItem().getId()==item.getId())
+					.filter(comment -> comment.getItem().getId() == item.getId())
 					.collect(Collectors.toList());
 			itemDto.setComments(CommentMapper.toListCommentDto(itemComments));
 			itemDtoList.add(itemDto);
