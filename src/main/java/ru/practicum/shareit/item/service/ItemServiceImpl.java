@@ -65,7 +65,7 @@ public class ItemServiceImpl implements ItemService {
 		log.info("Update item with id {} to {}", itemId, updatedItem);
 		Item item = itemRepository.findById(itemId).orElseThrow();
 		updatedItem.setId(itemId);
-		if (userId!=item.getOwner().getId()) {
+		if (userId != item.getOwner().getId()) {
 			throw new AuthorizationErrorException("User " + userId + "is not the owner of the item");
 		}
 
@@ -164,7 +164,7 @@ public class ItemServiceImpl implements ItemService {
 		List<Booking> lastBookings = bookingRepository.findlastBookings(findItemList,LocalDateTime.now(),BookingStatus.APPROVED,desc);
 		List<Booking> nextBookings = bookingRepository.findNextBookings(findItemList,LocalDateTime.now(),BookingStatus.APPROVED,asc);
 		List<ItemDto> itemDtoList = new ArrayList<>();
-		List <Comment> comments = commentRepository.findAllByItems(itemList);
+		List<Comment> comments = commentRepository.findAllByItems(itemList);
 
 		for (Item item : itemList) {
 			ItemDto itemDto = ItemMapper.toItemDto(item);
