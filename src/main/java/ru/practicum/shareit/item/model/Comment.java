@@ -4,33 +4,30 @@ import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-
-/**
- * TODO Sprint add-controllers.
- */
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "items")
+@Table(name = "comments")
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Item {
+public class Comment {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	@Column(nullable = false)
-	private String name;
 
-	@Column(nullable = false)
-	private String description;
-
-	private Boolean available;
+	private String text;
 
 	@ManyToOne
-	@JoinColumn(name = "owner")
-	private User owner;
+	@JoinColumn(name = "item")
+	private Item item;
 
+	@ManyToOne
+	@JoinColumn(name = "author")
+	private User author;
+
+	private LocalDateTime created;
 }

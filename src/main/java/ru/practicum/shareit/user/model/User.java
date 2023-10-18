@@ -1,19 +1,28 @@
 package ru.practicum.shareit.user.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
+
+import javax.persistence.*;
 
 /**
  * TODO Sprint add-controllers.
  */
-@Data
+@Entity
+@Table(name = "users")
+@Setter
+@Getter
+@NoArgsConstructor
 @AllArgsConstructor
 public class User {
 
-	private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
 
+	@Column(nullable = false,  unique = true)
 	private String name;
 
+	@Column(nullable = false,  unique = true)
 	private String email;
 
 }

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
@@ -43,9 +44,9 @@ public class ItemController {
 	}
 
 	@GetMapping("/{itemId}")
-	public ItemDto getItemById(@PathVariable int itemId) {
+	public ItemDto getItemById(@PathVariable int itemId, @RequestHeader("X-Sharer-User-Id") int userId) {
 		log.info("Get item by Id {}", itemId);
-		return itemService.getItemById(itemId);
+		return itemService.getItemById(itemId, userId);
 	}
 
 	@GetMapping
@@ -65,6 +66,14 @@ public class ItemController {
 	public void clearItems() {
 		log.info("Delete all items");
 		itemService.clearItems();
+	}
+
+	@PostMapping("/{itemId}/comment")
+	public CommentDto addComment(@PathVariable int itemId,
+	                             @RequestHeader("X-Sharer-User-Id") int userId,
+	                             @Valid @RequestBody CommentDto commentDto) {
+		log.info("Add comment to Item {} from user {}. Comment: {}", itemId, userId, commentDto);
+		return itemService.addComment(itemId, userId, commentDto);
 	}
 
 }

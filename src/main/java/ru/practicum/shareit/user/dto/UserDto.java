@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @AllArgsConstructor
 public class UserDto {
-	private Integer id;
+	private int id;
 	@NotBlank(groups = ValidationGroups.CreateUser.class)
 	private String name;
 	@NotBlank(groups = ValidationGroups.CreateUser.class)
