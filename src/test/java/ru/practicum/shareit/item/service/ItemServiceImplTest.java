@@ -9,6 +9,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.exceptions.AuthorizationErrorException;
+import ru.practicum.shareit.exception.exceptions.CommentException;
+import ru.practicum.shareit.exception.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Comment;
@@ -22,9 +25,11 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -209,6 +214,15 @@ class ItemServiceImplTest {
 	}
 
 	@Test
+	public void shouldSearchItemsByBlankText() {
+		List<Item> items = List.of(item);
+
+		List<ItemDto> searchResults = itemService.searchItemsByText("");
+
+		assertEquals(0, searchResults.size());
+	}
+
+	@Test
 	public void shouldAddComment() {
 		item.setId(1);
 		CommentDto comment = CommentDto.builder()
@@ -229,5 +243,60 @@ class ItemServiceImplTest {
 		assertEquals(1, addedComment.getId());
 		assertEquals("comment", addedComment.getText());
 		assertEquals(user.getName(), addedComment.getAuthorName());
+	}
+
+	@Test
+	void shouldThrowNotFoundExceptionWhenAddingItemWithNonexistentUser() {
+
+		assertThrows(NotFoundException.class, () -> {
+			itemService.addItem(999, itemDto); // User with ID 999 does not exist
+		});
+	}
+
+	@Test
+	void shouldThrowNotFoundExceptionWhenGettingItemsOfNonexistentUser() {
+		assertThrows(NoSuchElementException.class, () -> {
+			itemService.getOwnerItems(999); // User with ID 999 does not exist
+		});
+	}
+
+	@Test
+	void shouldThrowNotFoundExceptionWhenAddingCommentToNonexistentItem() {
+
+		CommentDto comment = CommentDto.builder()
+				.text("comment")
+				.build();
+
+		assertThrows(NoSuchElementException.class, () -> {
+			itemService.addComment(999, 1, comment); // Item with ID 999 does not exist
+		});
+	}
+
+	@Test
+	void shouldThrowAuthorizationErrorExceptionWhenAddingCommentWithoutBooking() {
+
+		CommentDto comment = CommentDto.builder()
+				.text("comment")
+				.build();
+
+		assertThrows(CommentException.class, () -> {
+			itemService.addComment(2, 1, comment); // User with ID 1 didn't book item 2
+		});
+	}
+
+	@Test
+	void shouldThrowCommentExceptionWhenAddingCommentWithoutBooking() {
+
+		CommentDto comment = CommentDto.builder()
+				.text("comment")
+				.build();
+
+		// Simulate the case where a user did not book the item but tries to add a comment
+		when(bookingRepository.findByItemAndBookerAndStatusAndEndBefore(any(), any(), any(), any()))
+				.thenReturn(List.of());
+
+		assertThrows(CommentException.class, () -> {
+			itemService.addComment(2, 1, comment); // User with ID 1 didn't book item 2
+		});
 	}
 }

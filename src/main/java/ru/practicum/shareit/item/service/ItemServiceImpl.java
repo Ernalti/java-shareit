@@ -125,12 +125,6 @@ public class ItemServiceImpl implements ItemService {
 
 	@Override
 	@Transactional
-	public void clearItems() {
-		itemRepository.deleteAll();
-	}
-
-	@Override
-	@Transactional
 	public CommentDto addComment(int itemId, int userId, CommentDto commentDto) {
 		Item item = itemRepository.findById(itemId).orElseThrow();
 		User user = userRepository.findById(userId).orElseThrow();

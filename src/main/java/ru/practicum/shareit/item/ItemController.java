@@ -61,13 +61,6 @@ public class ItemController {
 		return itemService.searchItemsByText(text);
 	}
 
-	@DeleteMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void clearItems() {
-		log.info("Delete all items");
-		itemService.clearItems();
-	}
-
 	@PostMapping("/{itemId}/comment")
 	public CommentDto addComment(@PathVariable int itemId,
 	                             @RequestHeader("X-Sharer-User-Id") int userId,
