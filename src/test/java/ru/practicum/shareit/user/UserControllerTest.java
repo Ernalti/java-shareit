@@ -106,13 +106,4 @@ class UserControllerTest {
 				.andExpect(status().isNoContent());
 	}
 
-	@Test
-	public void shouldClearUsers() throws Exception {
-		mvc.perform(delete("/users")
-						.characterEncoding(StandardCharsets.UTF_8)
-						.contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNoContent());
-	}
-
 }

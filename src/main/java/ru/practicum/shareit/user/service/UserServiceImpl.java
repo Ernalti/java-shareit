@@ -70,13 +70,6 @@ public class UserServiceImpl implements UserService {
 		userRepository.deleteById(id);
 	}
 
-	@Override
-	@Transactional
-	public void clearUsers() {
-		log.info("Clear all users");
-		userRepository.deleteAll();
-	}
-
 	private void uniqueEmail(int id, String email) {
 		List<User> users = userRepository.findByEmailIgnoreCase(email);
 		if (users != null && (users.size() > 1 || (users.size() == 1 && users.get(0).getId() != id))) {
