@@ -20,13 +20,6 @@ import java.util.NoSuchElementException;
 public class ErrorHandler {
 
 	@ExceptionHandler
-	@ResponseStatus(HttpStatus.CONFLICT)
-	public ErrorResponse handleEntityAlreadyExistsException(EntityAlreadyExistsException e) {
-		log.debug("Get status 409. CONFLICT {}", e.getMessage(), e);
-		return new ErrorResponse(e.getMessage());
-	}
-
-	@ExceptionHandler
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ErrorResponse handleNotFound(final NotFoundException e) {
 		log.debug("Get status 404 Not found {}", e.getMessage(), e);
