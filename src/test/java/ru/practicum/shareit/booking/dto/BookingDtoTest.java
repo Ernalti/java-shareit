@@ -19,6 +19,7 @@ class BookingDtoTest {
 	@Autowired
 	private JacksonTester<BookingDto> json;
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSS");
+
 	@Test
 	public void testBookingDto() throws IOException {
 		LocalDateTime start = LocalDateTime.now();
