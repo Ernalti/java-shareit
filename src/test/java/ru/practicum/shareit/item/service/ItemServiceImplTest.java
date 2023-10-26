@@ -9,7 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.exceptions.AuthorizationErrorException;
 import ru.practicum.shareit.exception.exceptions.CommentException;
 import ru.practicum.shareit.exception.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
