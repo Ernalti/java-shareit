@@ -41,9 +41,9 @@ class ItemRequestRepositoryTest {
 				.email("user3@yandex.ru")
 				.build();
 
-		user1=userRepository.save(user1);
-		user2=userRepository.save(user2);
-		user3=userRepository.save(user3);
+		user1 = userRepository.save(user1);
+		user2 = userRepository.save(user2);
+		user3 = userRepository.save(user3);
 
 		ItemRequest request1 = ItemRequest.builder()
 				.requestor(user1)

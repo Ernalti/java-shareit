@@ -136,7 +136,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	public void ShouldGetUserById() {
+	public void shouldGetUserById() {
 		UserDto newUser = userService.getUserById(1);
 		assertEquals(1, newUser.getId());
 		assertEquals(user1.getName(), newUser.getName());
@@ -149,7 +149,7 @@ class UserServiceImplTest {
 	}
 
 	@Test
-	public void ShouldGetAllUsers() {
+	public void shouldGetAllUsers() {
 		List<User> listUsers = new ArrayList<>();
 		listUsers.add(user1);
 		listUsers.add(user2);

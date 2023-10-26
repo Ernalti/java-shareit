@@ -60,7 +60,8 @@ public class ItemServiceImpl implements ItemService {
 			 itemRequest = itemRequestRepository.findById(itemDto.getRequestId())
 					.orElseThrow(() -> new NotFoundException("Request " + itemDto.getRequestId() + " not found"));
 
-		}		Item item = ItemMapper.toItem(itemDto, user, itemRequest);
+		}
+		Item item = ItemMapper.toItem(itemDto, user, itemRequest);
 		log.info("Add item {}", item);
 		item.setOwner(user);
 		return ItemMapper.toItemDto(itemRepository.save(item));
