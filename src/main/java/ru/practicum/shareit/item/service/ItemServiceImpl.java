@@ -21,6 +21,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -38,20 +40,27 @@ public class ItemServiceImpl implements ItemService {
 	private final UserRepository userRepository;
 	private final BookingRepository bookingRepository;
 	private final CommentRepository commentRepository;
+	private final ItemRequestRepository itemRequestRepository;
 
 	@Autowired
-	public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository, BookingRepository bookingRepository, CommentRepository commentRepository) {
+	public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository, BookingRepository bookingRepository, CommentRepository commentRepository, ItemRequestRepository itemRequestRepository) {
 		this.itemRepository = itemRepository;
 		this.userRepository = userRepository;
 		this.bookingRepository = bookingRepository;
 		this.commentRepository = commentRepository;
+		this.itemRequestRepository = itemRequestRepository;
 	}
 
 	@Override
 	@Transactional
 	public ItemDto addItem(int userId, ItemDto itemDto) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User " + userId + " not found"));
-		Item item = ItemMapper.toItem(itemDto, user);
+		ItemRequest itemRequest = null;
+		if (itemDto.getRequestId() != null) {
+			 itemRequest = itemRequestRepository.findById(itemDto.getRequestId())
+					.orElseThrow(() -> new NotFoundException("Request " + itemDto.getRequestId() + " not found"));
+
+		}		Item item = ItemMapper.toItem(itemDto, user, itemRequest);
 		log.info("Add item {}", item);
 		item.setOwner(user);
 		return ItemMapper.toItemDto(itemRepository.save(item));
@@ -61,9 +70,10 @@ public class ItemServiceImpl implements ItemService {
 	@Transactional
 	public ItemDto updateItem(int itemId, int userId, ItemDto itemDto) {
 		User user = userRepository.findById(userId).orElseThrow();
-		Item updatedItem = ItemMapper.toItem(itemDto, user);
-		log.info("Update item with id {} to {}", itemId, updatedItem);
 		Item item = itemRepository.findById(itemId).orElseThrow();
+		Item updatedItem = ItemMapper.toItem(itemDto, user, item.getRequest());
+		log.info("Update item with id {} to {}", itemId, updatedItem);
+
 		updatedItem.setId(itemId);
 		if (userId != item.getOwner().getId()) {
 			throw new AuthorizationErrorException("User " + userId + "is not the owner of the item");

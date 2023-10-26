@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,29 +86,30 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public List<BookingDto> getOwnerBookings(int userId, String state) {
+	public List<BookingDto> getOwnerBookings(int userId, String state, int from, int size) {
 		User user = userRepository.findById(userId).orElseThrow();
+		PageRequest pageRequest = PageRequest.of(from / size, size);
 		LocalDateTime time = LocalDateTime.now();
 		Sort sort = Sort.by("start").descending();
 		List<Booking> res;
 		switch (state) {
 			case "ALL":
-				res = bookingRepository.findByItemOwner(user, sort);
+				res = bookingRepository.findByItemOwner(user, sort, pageRequest);
 				break;
 			case "CURRENT":
-				res = bookingRepository.findByItemOwnerAndStartBeforeAndEndAfter(user, time, time, sort);
+				res = bookingRepository.findByItemOwnerAndStartBeforeAndEndAfter(user, time, time, pageRequest, sort);
 				break;
 			case "PAST":
-				res = bookingRepository.findByItemOwnerAndEndBeforeAndStatus(user, time, BookingStatus.APPROVED, sort);
+				res = bookingRepository.findByItemOwnerAndEndBeforeAndStatus(user, time, BookingStatus.APPROVED, pageRequest, sort);
 				break;
 			case "FUTURE":
-				res = bookingRepository.findByItemOwnerAndEndAfter(user, time, sort);
+				res = bookingRepository.findByItemOwnerAndEndAfter(user, time, pageRequest, sort);
 				break;
 			case "WAITING":
-				res = bookingRepository.findByItemOwnerAndStatus(user, BookingStatus.WAITING, sort);
+				res = bookingRepository.findByItemOwnerAndStatus(user, BookingStatus.WAITING, pageRequest, sort);
 				break;
 			case "REJECTED":
-				res = bookingRepository.findByItemOwnerAndStatus(user, BookingStatus.REJECTED, sort);
+				res = bookingRepository.findByItemOwnerAndStatus(user, BookingStatus.REJECTED, pageRequest, sort);
 				break;
 			default:
 				throw new StatusException("Unknown state: " + state);
@@ -118,29 +120,30 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public List<BookingDto> getBookings(int userId, String state) {
+	public List<BookingDto> getBookings(int userId, String state, int from, int size) {
 		User user = userRepository.findById(userId).orElseThrow();
+		PageRequest pageRequest = PageRequest.of(from / size, size);
 		LocalDateTime time = LocalDateTime.now();
 		Sort sort = Sort.by("start").descending();
 		List<Booking> res;
 		switch (state) {
 			case "ALL":
-				res = bookingRepository.findByBooker(user, sort);
+				res = bookingRepository.findByBooker(user, pageRequest, sort);
 				break;
 			case "CURRENT":
-				res = bookingRepository.findByBookerAndStartBeforeAndEndAfter(user, time, time, sort);
+				res = bookingRepository.findByBookerAndStartBeforeAndEndAfter(user, time, time, pageRequest, sort);
 				break;
 			case "PAST":
-				res = bookingRepository.findByBookerAndEndBeforeAndStatus(user, time, BookingStatus.APPROVED, sort);
+				res = bookingRepository.findByBookerAndEndBeforeAndStatus(user, time, BookingStatus.APPROVED, pageRequest, sort);
 				break;
 			case "FUTURE":
-				res = bookingRepository.findByBookerAndEndAfter(user, time, sort);
+				res = bookingRepository.findByBookerAndEndAfter(user, time, pageRequest, sort);
 				break;
 			case "WAITING":
-				res = bookingRepository.findByBookerAndStatus(user, BookingStatus.WAITING, sort);
+				res = bookingRepository.findByBookerAndStatus(user, BookingStatus.WAITING, pageRequest, sort);
 				break;
 			case "REJECTED":
-				res = bookingRepository.findByBookerAndStatus(user, BookingStatus.REJECTED, sort);
+				res = bookingRepository.findByBookerAndStatus(user, BookingStatus.REJECTED, pageRequest, sort);
 				break;
 			default:
 				throw new StatusException("Unknown state: " + state);
