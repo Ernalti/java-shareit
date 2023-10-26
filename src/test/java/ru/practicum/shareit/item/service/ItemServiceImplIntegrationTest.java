@@ -73,7 +73,7 @@ public class ItemServiceImplIntegrationTest {
 		Booking nextBooking = new Booking(2, LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(4), item, user, BookingStatus.APPROVED);
 		bookingRepository.save(lastBooking);
 		bookingRepository.save(nextBooking);
-		List<ItemDto> items = itemService.getOwnerItems(1);
+		List<ItemDto> items = itemService.getOwnerItems(user.getId());
 		ItemDto getItem = items.get(0);
 		assertEquals(item.getId(), getItem.getId());
 
