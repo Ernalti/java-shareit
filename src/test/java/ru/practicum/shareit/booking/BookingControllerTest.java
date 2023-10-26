@@ -39,8 +39,8 @@ class BookingControllerTest {
 	void setUp() {
 		booking = BookingDto.builder()
 				.id(1)
-				.start(LocalDateTime.of(2023, 10, 26, 12, 0))
-				.end(LocalDateTime.of(2023, 10, 26, 14, 0))
+				.start(LocalDateTime.now().plusDays(24))
+				.end(LocalDateTime.now().plusDays(42))
 				.itemId(2)
 				.status(BookingStatus.APPROVED)
 				.build();
