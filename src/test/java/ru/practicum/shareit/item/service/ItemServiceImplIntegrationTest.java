@@ -74,8 +74,8 @@ public class ItemServiceImplIntegrationTest {
 		bookingRepository.save(lastBooking);
 		bookingRepository.save(nextBooking);
 		List<ItemDto> items = itemService.getOwnerItems(1);
-		ItemDto item = items.get(0);
-		assertEquals(1, item.getId());
+		ItemDto getItem = items.get(0);
+		assertEquals(item.getId(), getItem.getId());
 
 	}
 
