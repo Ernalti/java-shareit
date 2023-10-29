@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
@@ -67,7 +68,7 @@ class ItemRequestRepositoryTest {
 
 	@Test
 	public void shouldFindAllByRequestorNotLike() {
-		List<ItemRequest> requests = itemRequestRepository.findAllByRequestorNotLike(user1, PageRequest.of(0, 10));
+		List<ItemRequest> requests = itemRequestRepository.findAllByRequestorNotLike(user1, PageRequest.of(0, 10)).toList();
 		assertEquals(2, requests.size());
 		assertEquals(user2.getId(),requests.get(0).getRequestor().getId());
 		assertEquals(user3.getId(),requests.get(1).getRequestor().getId());

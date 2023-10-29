@@ -115,4 +115,53 @@ class BookingControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(content().json(objectMapper.writeValueAsString(List.of(booking))));
 	}
+
+	@Test
+	void shouldBadRequestStartOnPast() throws Exception {
+		booking.setStart(LocalDateTime.now().minusSeconds(1));
+
+		mvc.perform(post("/bookings")
+						.header("X-Sharer-User-Id", 1)
+						.content(objectMapper.writeValueAsString(booking))
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void shouldBadRequestEndOnNow() throws Exception {
+		booking.setEnd(LocalDateTime.now());
+
+		mvc.perform(post("/bookings")
+						.header("X-Sharer-User-Id", 1)
+						.content(objectMapper.writeValueAsString(booking))
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void shouldBadRequestStartIsNull() throws Exception {
+		booking.setStart(null);
+
+		mvc.perform(post("/bookings")
+						.header("X-Sharer-User-Id", 1)
+						.content(objectMapper.writeValueAsString(booking))
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void shouldBadRequestEndIsNull() throws Exception {
+		booking.setEnd(null);
+
+		mvc.perform(post("/bookings")
+						.header("X-Sharer-User-Id", 1)
+						.content(objectMapper.writeValueAsString(booking))
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
 }

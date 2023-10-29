@@ -3,6 +3,7 @@ package ru.practicum.shareit.request.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.exceptions.NotFoundException;
@@ -57,9 +58,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 	@Override
 	public List<ItemRequestDto> getAllItemRequests(int userId, int from, int size) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User " + userId + " not found"));
-		PageRequest pageRequest = PageRequest.of(from / size, size);
+		Pageable page = PageRequest.of(from / size, size);
 		List<ItemRequest> itemRequests = itemRequestRepository
-				.findAllByRequestorNotLike(user, pageRequest);
+				.findAllByRequestorNotLike(user, page).toList();
 
 		return itemRequestsDtoWithItems(itemRequests);
 	}

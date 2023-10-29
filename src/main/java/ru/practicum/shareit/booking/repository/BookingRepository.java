@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.repository;
 
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,25 +19,25 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
 	List<Booking> findByItemAndBookerAndStatusAndEndBefore(Item item, User user, BookingStatus bookingStatus, LocalDateTime now);
 
-	List<Booking> findByItemOwnerAndStartBeforeAndEndAfter(User user, LocalDateTime time, LocalDateTime time1, PageRequest pageRequest, Sort sort);
+	Page<Booking> findByItemOwnerAndStartBeforeAndEndAfter(User user, LocalDateTime time, LocalDateTime time1, Pageable page);
 
-	List<Booking> findByItemOwnerAndEndBeforeAndStatus(User user, LocalDateTime time, BookingStatus bookingStatus, PageRequest pageRequest, Sort sort);
+	Page<Booking> findByItemOwnerAndEndBeforeAndStatus(User user, LocalDateTime time, BookingStatus bookingStatus, Pageable page);
 
-	List<Booking> findByItemOwnerAndEndAfter(User user, LocalDateTime time, PageRequest pageRequest, Sort sort);
+	Page<Booking> findByItemOwnerAndEndAfter(User user, LocalDateTime time, Pageable page);
 
-	List<Booking> findByItemOwnerAndStatus(User user, BookingStatus bookingStatus, PageRequest pageRequest, Sort sort);
+	Page<Booking> findByItemOwnerAndStatus(User user, BookingStatus bookingStatus, Pageable page);
 
-	List<Booking> findByBooker(User user, PageRequest pageRequest, Sort sort);
+	Page<Booking> findByBooker(User user, Pageable page);
 
-	List<Booking> findByBookerAndStartBeforeAndEndAfter(User user, LocalDateTime time, LocalDateTime time1, PageRequest pageRequest, Sort sort);
+	Page<Booking> findByBookerAndStartBeforeAndEndAfter(User user, LocalDateTime time, LocalDateTime time1, Pageable page);
 
-	List<Booking> findByBookerAndEndBeforeAndStatus(User user, LocalDateTime time, BookingStatus bookingStatus, PageRequest pageRequest, Sort sort);
+	Page<Booking> findByBookerAndEndBeforeAndStatus(User user, LocalDateTime time, BookingStatus bookingStatus, Pageable page);
 
-	List<Booking> findByBookerAndEndAfter(User user, LocalDateTime time, PageRequest pageRequest, Sort sort);
+	Page<Booking> findByBookerAndEndAfter(User user, LocalDateTime time, Pageable page);
 
-	List<Booking> findByBookerAndStatus(User user, BookingStatus bookingStatus, PageRequest pageRequest, Sort sort);
+	Page<Booking> findByBookerAndStatus(User user, BookingStatus bookingStatus, Pageable page);
 
-	List<Booking> findByItemOwner(User user, Sort sort, PageRequest pageRequest);
+	Page<Booking> findByItemOwner(User user, Pageable page);
 
 	Optional<Booking> findFirstByItemAndStartBeforeAndStatus(Item item, LocalDateTime time, BookingStatus bookingStatus, Sort desc);
 

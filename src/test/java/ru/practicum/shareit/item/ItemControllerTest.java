@@ -134,4 +134,56 @@ class ItemControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(content().json(objectMapper.writeValueAsString(comment)));
 	}
+
+	@Test
+	public void shouldBadRequestWithNameIsBlank() throws Exception {
+		item.setName("");
+
+		mvc.perform(post("/items")
+						.header("X-Sharer-User-Id", 1)
+						.content(objectMapper.writeValueAsString(item))
+						.characterEncoding(StandardCharsets.UTF_8)
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void shouldBadRequestWithDesscriptionIsBlank() throws Exception {
+		item.setDescription("");
+
+		mvc.perform(post("/items")
+						.header("X-Sharer-User-Id", 1)
+						.content(objectMapper.writeValueAsString(item))
+						.characterEncoding(StandardCharsets.UTF_8)
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void shouldBadRequestWithAvalibleIsNull() throws Exception {
+		item.setAvailable(null);
+
+		mvc.perform(post("/items")
+						.header("X-Sharer-User-Id", 1)
+						.content(objectMapper.writeValueAsString(item))
+						.characterEncoding(StandardCharsets.UTF_8)
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void shouldBadRequestWithCommentTextIsBlank() throws Exception {
+		comment.setText("");
+
+		mvc.perform(post("/items/1/comment")
+						.header("X-Sharer-User-Id", 1)
+						.content(objectMapper.writeValueAsString(comment))
+						.characterEncoding(StandardCharsets.UTF_8)
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
 }

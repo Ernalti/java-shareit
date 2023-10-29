@@ -106,4 +106,40 @@ class UserControllerTest {
 				.andExpect(status().isNoContent());
 	}
 
+	@Test
+	public void shouldBadRequestWithNameIsBlank() throws Exception {
+		user.setName("");
+
+		mvc.perform(post("/users")
+						.content(objectMapper.writeValueAsString(user))
+						.characterEncoding(StandardCharsets.UTF_8)
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void shouldBadRequestWithNotValidEmail() throws Exception {
+		user.setEmail("user@y@ndex.ru");
+
+		mvc.perform(post("/users")
+						.content(objectMapper.writeValueAsString(user))
+						.characterEncoding(StandardCharsets.UTF_8)
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void shouldBadRequestWithEmailIsBlank() throws Exception {
+		user.setEmail("");
+
+		mvc.perform(post("/users")
+						.content(objectMapper.writeValueAsString(user))
+						.characterEncoding(StandardCharsets.UTF_8)
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
 }

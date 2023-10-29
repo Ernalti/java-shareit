@@ -6,6 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -106,8 +109,10 @@ class ItemRequestServiceImplTest {
 
 	@Test
 	public void shouldGetAllItemRequests() {
+		List<ItemRequest> items = List.of(itemRequest);
+		Page<ItemRequest> itemPage = new PageImpl<>(items, PageRequest.of(0, 10),items.size());
 		when(itemRequestRepository.findAllByRequestorNotLike(any(), any()))
-				.thenReturn(List.of(itemRequest));
+				.thenReturn(itemPage);
 		when(itemRepository.findbyItemRequests(any())).thenReturn(List.of(item));
 
 		List<ItemRequestDto> allItemRequests = itemRequestService.getAllItemRequests(1, 0, 10);

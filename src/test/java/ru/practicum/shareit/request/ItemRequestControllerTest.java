@@ -95,4 +95,18 @@ class ItemRequestControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(content().json(objectMapper.writeValueAsString(itemRequest)));
 	}
+
+	@Test
+	void shouldBadRequestWhenDescriptionIsBlank() throws Exception {
+		itemRequest.setDescription("");
+
+		mvc.perform(post("/requests")
+						.header("X-Sharer-User-Id", 1)
+						.content(objectMapper.writeValueAsString(itemRequest))
+						.characterEncoding(StandardCharsets.UTF_8)
+						.contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+	}
+
 }
