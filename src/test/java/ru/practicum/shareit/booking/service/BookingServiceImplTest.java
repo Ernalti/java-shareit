@@ -9,7 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.booking.model.Booking;
@@ -50,6 +49,7 @@ class BookingServiceImplTest {
 	private BookingDto bookingDto;
 	private Booking booking;
 	Page<Booking> bookingPage;
+
 	@BeforeEach
 	public void beforeEach() {
 		user1 = User.builder()
@@ -155,7 +155,7 @@ class BookingServiceImplTest {
 	@Test
 	public void shouldGetAllOwnerBookings() {
 
-		when(bookingRepository.findByItemOwner(any(), any(), any())).thenReturn(bookingPage);
+		when(bookingRepository.findByItemOwner(any(), any())).thenReturn(bookingPage);
 		List<BookingDto> ownerBookings = bookingService.getOwnerBookings(1, "ALL", 0, 10);
 		assertEquals(1, ownerBookings.size());
 		assertEquals(2, ownerBookings.get(0).getId());
@@ -163,7 +163,7 @@ class BookingServiceImplTest {
 
 	@Test
 	public void shouldGetCurrentOwnerBookings() {
-		when(bookingRepository.findByItemOwnerAndStartBeforeAndEndAfter(any(), any(), any(), any(), any())).thenReturn(bookingPage);
+		when(bookingRepository.findByItemOwnerAndStartBeforeAndEndAfter(any(), any(), any(), any())).thenReturn(bookingPage);
 		List<BookingDto> ownerBookings = bookingService.getOwnerBookings(1, "CURRENT", 0, 10);
 		assertEquals(1, ownerBookings.size());
 		assertEquals(2, ownerBookings.get(0).getId());
@@ -171,7 +171,7 @@ class BookingServiceImplTest {
 
 	@Test
 	public void shouldGetPastOwnerBookings() {
-		when(bookingRepository.findByItemOwnerAndEndBeforeAndStatus(any(), any(), any(), any(), any())).thenReturn(bookingPage);
+		when(bookingRepository.findByItemOwnerAndEndBeforeAndStatus(any(), any(), any(), any())).thenReturn(bookingPage);
 		List<BookingDto> ownerBookings = bookingService.getOwnerBookings(1, "PAST", 0, 10);
 		assertEquals(1, ownerBookings.size());
 		assertEquals(2, ownerBookings.get(0).getId());
@@ -179,7 +179,7 @@ class BookingServiceImplTest {
 
 	@Test
 	public void shouldGetFutureOwnerBookings() {
-		when(bookingRepository.findByItemOwnerAndEndAfter(any(), any(), any(), any())).thenReturn(bookingPage);
+		when(bookingRepository.findByItemOwnerAndEndAfter(any(), any(), any())).thenReturn(bookingPage);
 		List<BookingDto> ownerBookings = bookingService.getOwnerBookings(1, "FUTURE", 0, 10);
 		assertEquals(1, ownerBookings.size());
 		assertEquals(2, ownerBookings.get(0).getId());
@@ -187,7 +187,7 @@ class BookingServiceImplTest {
 
 	@Test
 	public void shouldGetWaitingOwnerBookings() {
-		when(bookingRepository.findByItemOwnerAndStatus(any(), any(), any(), any())).thenReturn(bookingPage);
+		when(bookingRepository.findByItemOwnerAndStatus(any(), any(), any())).thenReturn(bookingPage);
 		List<BookingDto> ownerBookings = bookingService.getOwnerBookings(1, "WAITING", 0, 10);
 		assertEquals(1, ownerBookings.size());
 		assertEquals(2, ownerBookings.get(0).getId());
@@ -195,7 +195,7 @@ class BookingServiceImplTest {
 
 	@Test
 	public void shouldGetRejectedOwnerBookings() {
-		when(bookingRepository.findByItemOwnerAndStatus(any(), any(), any(), any())).thenReturn(bookingPage);
+		when(bookingRepository.findByItemOwnerAndStatus(any(), any(), any())).thenReturn(bookingPage);
 		List<BookingDto> ownerBookings = bookingService.getOwnerBookings(1, "REJECTED", 0, 10);
 		assertEquals(1, ownerBookings.size());
 		assertEquals(2, ownerBookings.get(0).getId());
@@ -208,7 +208,7 @@ class BookingServiceImplTest {
 
 	@Test
 	public void shouldGetAllBookings() {
-		when(bookingRepository.findByBooker(any(), any(), any())).thenReturn(bookingPage);
+		when(bookingRepository.findByBooker(any(), any())).thenReturn(bookingPage);
 		List<BookingDto> ownerBookings = bookingService.getBookings(1, "ALL", 0, 10);
 		assertEquals(1, ownerBookings.size());
 		assertEquals(2, ownerBookings.get(0).getId());
@@ -216,7 +216,7 @@ class BookingServiceImplTest {
 
 	@Test
 	public void shouldGetCurrentBookings() {
-		when(bookingRepository.findByBookerAndStartBeforeAndEndAfter(any(), any(), any(), any(), any())).thenReturn(bookingPage);
+		when(bookingRepository.findByBookerAndStartBeforeAndEndAfter(any(), any(), any(), any())).thenReturn(bookingPage);
 		List<BookingDto> ownerBookings = bookingService.getBookings(1, "CURRENT", 0, 10);
 		assertEquals(1, ownerBookings.size());
 		assertEquals(2, ownerBookings.get(0).getId());
@@ -224,7 +224,7 @@ class BookingServiceImplTest {
 
 	@Test
 	public void shouldGetPastBookings() {
-		when(bookingRepository.findByBookerAndEndBeforeAndStatus(any(), any(), any(), any(), any())).thenReturn(bookingPage);
+		when(bookingRepository.findByBookerAndEndBeforeAndStatus(any(), any(), any(), any())).thenReturn(bookingPage);
 		List<BookingDto> ownerBookings = bookingService.getBookings(1, "PAST", 0, 10);
 		assertEquals(1, ownerBookings.size());
 		assertEquals(2, ownerBookings.get(0).getId());
@@ -232,7 +232,7 @@ class BookingServiceImplTest {
 
 	@Test
 	public void shouldGetFutureBookings() {
-		when(bookingRepository.findByBookerAndEndAfter(any(), any(), any(), any())).thenReturn(bookingPage);
+		when(bookingRepository.findByBookerAndEndAfter(any(), any(), any())).thenReturn(bookingPage);
 		List<BookingDto> ownerBookings = bookingService.getBookings(1, "FUTURE", 0, 10);
 		assertEquals(1, ownerBookings.size());
 		assertEquals(2, ownerBookings.get(0).getId());
@@ -240,7 +240,7 @@ class BookingServiceImplTest {
 
 	@Test
 	public void shouldGetWaitingBookings() {
-		when(bookingRepository.findByBookerAndStatus(any(), any(), any(), any())).thenReturn(bookingPage);
+		when(bookingRepository.findByBookerAndStatus(any(), any(), any())).thenReturn(bookingPage);
 		List<BookingDto> ownerBookings = bookingService.getBookings(1, "WAITING", 0, 10);
 		assertEquals(1, ownerBookings.size());
 		assertEquals(2, ownerBookings.get(0).getId());
@@ -248,7 +248,7 @@ class BookingServiceImplTest {
 
 	@Test
 	public void shouldGetRejectedBookings() {
-		when(bookingRepository.findByBookerAndStatus(any(), any(), any(), any())).thenReturn(bookingPage);
+		when(bookingRepository.findByBookerAndStatus(any(), any(), any())).thenReturn(bookingPage);
 		List<BookingDto> ownerBookings = bookingService.getBookings(1, "REJECTED", 0, 10);
 		assertEquals(1, ownerBookings.size());
 		assertEquals(2, ownerBookings.get(0).getId());
