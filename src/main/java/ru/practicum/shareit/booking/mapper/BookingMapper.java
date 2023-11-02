@@ -8,6 +8,7 @@ import ru.practicum.shareit.user.model.User;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 public class BookingMapper {
 
 	private BookingMapper() {

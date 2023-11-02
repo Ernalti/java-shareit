@@ -31,4 +31,6 @@ public class ItemDto {
 
 	private List<CommentDto> comments;
 
+	private Integer requestId;
+
 }

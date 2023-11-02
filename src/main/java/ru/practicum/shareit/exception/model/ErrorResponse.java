@@ -1,5 +1,8 @@
 package ru.practicum.shareit.exception.model;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class ErrorResponse {
 
 	private final String error;
