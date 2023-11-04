@@ -42,8 +42,7 @@ public class ItemClient extends BaseClient {
 
 
 	public ResponseEntity<Object> getOwnerItems(int userId) {
-		ResponseEntity<Object> res = get("", userId);
-		return res;
+		return get("", userId);
 	}
 
 

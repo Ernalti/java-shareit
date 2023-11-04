@@ -38,12 +38,6 @@ public class BookingClient extends BaseClient {
         return get("?state={state}&from={from}&size={size}", userId, parameters);
     }
 
-
-
-//    public ResponseEntity<Object> bookItem(int userId, BookingDto requestDto) {
-//        return post("", userId, requestDto);
-//    }
-
     public ResponseEntity<Object> getBooking(int userId, Integer bookingId) {
         return get("/" + bookingId, userId);
     }
