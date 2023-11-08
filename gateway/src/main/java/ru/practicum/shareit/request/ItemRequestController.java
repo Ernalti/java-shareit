@@ -12,6 +12,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
+import static ru.practicum.shareit.constants.Constant.USER_ID_HEADER;
+
 /**
  * TODO Sprint add-item-requests.
  */
@@ -26,20 +28,20 @@ public class ItemRequestController {
 	private final ItemRequestClient itemRequestClient;
 
 	@PostMapping
-	public ResponseEntity<Object> addItemRequest(@RequestHeader("X-Sharer-User-Id") int userId,
+	public ResponseEntity<Object> addItemRequest(@RequestHeader(USER_ID_HEADER) @Positive int userId,
 	                                             @Valid @RequestBody ItemRequestDto itemRequestDto) {
 		log.info("Add item requset {} from user {}", itemRequestDto, userId);
 		return itemRequestClient.addItemRequest(userId, itemRequestDto);
 	}
 
 	@GetMapping
-	public ResponseEntity<Object> getOwnerItemRequests(@RequestHeader("X-Sharer-User-Id") int userId) {
+	public ResponseEntity<Object> getOwnerItemRequests(@RequestHeader(USER_ID_HEADER) @Positive int userId) {
 		log.info("Find owner requsets from user {}", userId);
 		return itemRequestClient.getOwnerItemRequests(userId);
 	}
 
 	@GetMapping("/all")
-	public ResponseEntity<Object> getAllItemRequests(@RequestHeader("X-Sharer-User-Id") int userId,
+	public ResponseEntity<Object> getAllItemRequests(@RequestHeader(USER_ID_HEADER) @Positive int userId,
 	                                               @RequestParam(value = "from", defaultValue = "0")  @PositiveOrZero int from,
 	                                               @RequestParam(value = "size", defaultValue = "10") @Positive int size) {
 		log.info("Find all requsets from {} size {}", from, size);
@@ -47,8 +49,8 @@ public class ItemRequestController {
 	}
 
 	@GetMapping("/{requestId}")
-	public ResponseEntity<Object> getItemRequestById(@RequestHeader("X-Sharer-User-Id") int userId,
-	                                               @PathVariable int requestId) {
+	public ResponseEntity<Object> getItemRequestById(@RequestHeader(USER_ID_HEADER) @Positive int userId,
+	                                               @PathVariable @Positive int requestId) {
 		log.info("Get requsets id {}", requestId);
 		return itemRequestClient.getItemRequestById(userId, requestId);
 	}

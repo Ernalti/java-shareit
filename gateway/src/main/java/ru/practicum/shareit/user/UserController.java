@@ -10,6 +10,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.ValidationGroups;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 
 /**
  * TODO Sprint add-controllers.
@@ -31,13 +32,13 @@ public class UserController {
 
 	@PatchMapping("/{id}")
 	@Validated(ValidationGroups.UpdateUser.class)
-	public ResponseEntity<Object> updateUser(@PathVariable int id, @Valid @RequestBody UserDto userDto) {
+	public ResponseEntity<Object> updateUser(@PathVariable @Positive int id, @Valid @RequestBody UserDto userDto) {
 		log.info("Update user {}", userDto);
 		return userClient.updateUser(id, userDto);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Object> getUserById(@PathVariable int id) {
+	public ResponseEntity<Object> getUserById(@PathVariable @Positive int id) {
 		log.info("Get user by id {}", id);
 		return userClient.getUserById(id);
 	}
@@ -49,7 +50,7 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Object> deleteUser(@PathVariable int id) {
+	public ResponseEntity<Object> deleteUser(@PathVariable @Positive int id) {
 		log.info("Delete user with id {}", id);
 		return userClient.deleteUser(id);
 	}

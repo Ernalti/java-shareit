@@ -28,6 +28,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -119,7 +120,7 @@ public class ItemServiceImpl implements ItemService {
 			log.info("Search item by text {}", text);
 			return ItemMapper.toListItemDto(itemRepository.findByDescriptionContainingIgnoreCaseAndAvailableIsTrueOrNameContainingIgnoreCaseAndAvailableIsTrue(text, text));
 		} else {
-			return new ArrayList<>();
+			return Collections.emptyList();
 		}
 	}
 

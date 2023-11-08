@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request.mapper;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
@@ -8,8 +9,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@UtilityClass
 public class ItemRequestMapper {
-	public static ItemRequestDto toItemRequestDTO(ItemRequest itemRequest) {
+	public ItemRequestDto toItemRequestDTO(ItemRequest itemRequest) {
 		return ItemRequestDto.builder()
 				.id(itemRequest.getId())
 				.description(itemRequest.getDescription())
@@ -18,7 +20,7 @@ public class ItemRequestMapper {
 				.build();
 	}
 
-	public static ItemRequest toItemRequest(ItemRequestDto itemRequestDTO, User user) {
+	public ItemRequest toItemRequest(ItemRequestDto itemRequestDTO, User user) {
 		return ItemRequest.builder()
 				.id(itemRequestDTO.getId())
 				.description(itemRequestDTO.getDescription())
@@ -27,7 +29,7 @@ public class ItemRequestMapper {
 				.build();
 	}
 
-	public static List<ItemRequestDto> toListItemRequestDto(List<ItemRequest> itemRequests) {
+	public List<ItemRequestDto> toListItemRequestDto(List<ItemRequest> itemRequests) {
 		return itemRequests.stream()
 				.map(ItemRequestMapper::toItemRequestDTO)
 				.collect(Collectors.toList());
